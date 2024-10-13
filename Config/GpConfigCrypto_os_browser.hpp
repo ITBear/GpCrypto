@@ -1,0 +1,4 @@
+#pragma once
+
+//#define GP_CRYPTO_USE_FILE_UTILS
+#define GP_CRYPTO_USE_SASL_SCRAM_SERVER_AUTH

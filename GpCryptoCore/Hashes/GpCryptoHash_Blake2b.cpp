@@ -1,7 +1,11 @@
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Blake2b.hpp>
 
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
 GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
 #include <libsodium/sodium.h>
 

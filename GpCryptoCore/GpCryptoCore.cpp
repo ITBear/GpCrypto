@@ -1,5 +1,10 @@
 #include <GpCrypto/GpCryptoCore/GpCryptoCore.hpp>
 #include <GpCore2/GpUtils/Random/GpSRandom.hpp>
+
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
 #include <libsodium/sodium.h>
 
 #if defined(GP_OS_LINUX)

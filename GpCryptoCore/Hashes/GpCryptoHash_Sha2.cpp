@@ -2,18 +2,22 @@
 #include <GpCore2/GpUtils/EventBus/Events/GpDataProcessUpdateEvent.hpp>
 #include <algorithm>
 
-GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
+//GP_WARNING_PUSH()
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
 #include <libsodium/sodium.h>
 
-GP_WARNING_POP()
+//GP_WARNING_POP()
 
 namespace GPlatform {
 
 GpCryptoHash_Sha2::Res256T  GpCryptoHash_Sha2::S_256 (GpSpanByteR aData)
 {
-    std::atomic_flag stopFlag = false;
+    std::atomic_flag stopFlag = ATOMIC_FLAG_INIT;
 
     return S_256
     (

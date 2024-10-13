@@ -1,4 +1,4 @@
-#include <GpCrypto/GpCryptoCore/MnemonicCodes/GpMnemonicCodeGen.hpp>
+#include <GpCrypto/GpCryptoCore/MnemonicCodes/GpCryptoMnemonicUtils.hpp>
 
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Sha2.hpp>
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_PBKDF2.hpp>
@@ -8,34 +8,38 @@
 
 #include <utf8proc/utf8proc.hpp>
 
-GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
+//GP_WARNING_PUSH()
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
 #include <libsodium/sodium.h>
 
-GP_WARNING_POP()
+//GP_WARNING_POP()
 
 namespace GPlatform {
 
-static const std::array<std::tuple<size_bit_t, size_bit_t, size_t>, size_t(GpMnemonicCodeGen::EntropySize::_LAST)>
-GpMnemonicCodeGen_sMnemonicK =
+static const std::array<std::tuple<size_bit_t, size_bit_t, size_t>, size_t(GpCryptoMnemonicUtils::EntropySize::_LAST)>
+GpCryptoMnemonicUtils_sMnemonicK =
 {
     //ENT, CS, MS
-    std::tuple<size_bit_t, size_bit_t, size_t>{128_bit, 4_bit, 12},// ES_128
-    std::tuple<size_bit_t, size_bit_t, size_t>{160_bit, 5_bit, 15},// ES_160
-    std::tuple<size_bit_t, size_bit_t, size_t>{192_bit, 6_bit, 18},// ES_192
-    std::tuple<size_bit_t, size_bit_t, size_t>{224_bit, 7_bit, 21},// ES_224
-    std::tuple<size_bit_t, size_bit_t, size_t>{256_bit, 8_bit, 24} // ES_256
+    std::tuple<size_bit_t, size_bit_t, size_t>{128_bit, 4_bit, size_t{12}},// ES_128
+    std::tuple<size_bit_t, size_bit_t, size_t>{160_bit, 5_bit, size_t{15}},// ES_160
+    std::tuple<size_bit_t, size_bit_t, size_t>{192_bit, 6_bit, size_t{18}},// ES_192
+    std::tuple<size_bit_t, size_bit_t, size_t>{224_bit, 7_bit, size_t{21}},// ES_224
+    std::tuple<size_bit_t, size_bit_t, size_t>{256_bit, 8_bit, size_t{24}} // ES_256
 };
 
-GpSecureStorage::CSP    GpMnemonicCodeGen::SGenerateNewMnemonic
+GpSecureStorage::CSP    GpCryptoMnemonicUtils::SGenerateNewMnemonic
 (
     const WordListT&    /*aWordList*/,
     const std::string   /*aSpaceChar*/,
     const EntropySize   aEntropySize
 )
 {
-    const auto&         conf            = GpMnemonicCodeGen_sMnemonicK.at(size_t(aEntropySize));
+    const auto&         conf            = GpCryptoMnemonicUtils_sMnemonicK.at(size_t(aEntropySize));
     const size_bit_t    entropySize     = std::get<0>(conf);
     const size_bit_t    checksumLength  = std::get<1>(conf);
     //const size_t      wordsCount      = std::get<2>(conf);
@@ -92,7 +96,7 @@ GpSecureStorage::CSP    GpMnemonicCodeGen::SGenerateNewMnemonic
                 mnemonicPhraseWriter.Bytes(aSpaceChar);
             }
 
-            const u_int_16 wid = entropyBitReader.UInt16(11_bit, 0_bit);
+            const u_int_16 wid = entropyBitReader.UI16(11_bit, 0_bit);
             mnemonicPhraseWriter.Bytes(aWordList.at(wid));
         }
 
@@ -105,7 +109,7 @@ GpSecureStorage::CSP    GpMnemonicCodeGen::SGenerateNewMnemonic
     return mnemonicPhraseSP;
 }
 
-bool    GpMnemonicCodeGen::SValidateMnemonic
+bool    GpCryptoMnemonicUtils::SValidateMnemonic
 (
     const WordListT&        aWordList,
     const std::string       aSpaceChar,
@@ -115,7 +119,7 @@ bool    GpMnemonicCodeGen::SValidateMnemonic
     return SValidateMnemonic(aWordList, aSpaceChar, aMnemonic.ViewR().R());
 }
 
-bool    GpMnemonicCodeGen::SValidateMnemonic
+bool    GpCryptoMnemonicUtils::SValidateMnemonic
 (
     const WordListT&    /*aWordList*/,
     const std::string   aSpaceChar,
@@ -131,7 +135,7 @@ bool    GpMnemonicCodeGen::SValidateMnemonic
         Algo::SplitMode::SKIP_ZERO_LENGTH_PARTS
     );
 
-    const auto& conf = GpMnemonicCodeGen_sMnemonicK.at(SFindConfByWordsCount(std::size(mnemonicWords)));
+    const auto& conf = GpCryptoMnemonicUtils_sMnemonicK.at(SFindConfByWordsCount(std::size(mnemonicWords)));
 
     const size_bit_t    entropySize     = std::get<0>(conf);
     const size_bit_t    checksumLength  = std::get<1>(conf);
@@ -152,7 +156,7 @@ bool    GpMnemonicCodeGen::SValidateMnemonic
         for (std::string_view word: mnemonicWords)
         {
             const u_int_16 wid = SFindWordId(aWordList, word);
-            entropyWithChecksumWriter.UInt16(wid, 11_bit);
+            entropyWithChecksumWriter.UI16(wid, 11_bit);
         }*/
     }
 
@@ -163,7 +167,7 @@ bool    GpMnemonicCodeGen::SValidateMnemonic
 
         /*const size_t entropCnt = size_byte_t(entropySize).As<size_t>();
 
-        GpSecureStorageViewR                entropyWithChecksumViewR    = entropyWithChecksum.ViewR();
+        GpSecureStorageViewR            entropyWithChecksumViewR    = entropyWithChecksum.ViewR();
         GpSpanByteR                     entropyWithChecksumPtrR     = entropyWithChecksumViewR.R();
         GpSpanByteR                     entropy                     = entropyWithChecksumPtrR.Subspan(0, entropCnt);
         const GpCryptoHash_Sha2::Res256T    entropySha256 = GpCryptoHash_Sha2::S_256(entropy);
@@ -180,7 +184,7 @@ bool    GpMnemonicCodeGen::SValidateMnemonic
     }
 }
 
-GpSecureStorage::CSP    GpMnemonicCodeGen::SSeedFromMnemonic
+GpSecureStorage::CSP    GpCryptoMnemonicUtils::SSeedFromMnemonic
 (
     const WordListT&        aWordList,
     const std::string       aSpaceChar,
@@ -201,7 +205,7 @@ GpSecureStorage::CSP    GpMnemonicCodeGen::SSeedFromMnemonic
     );
 }
 
-GpSecureStorage::CSP    GpMnemonicCodeGen::SSeedFromMnemonic
+GpSecureStorage::CSP    GpCryptoMnemonicUtils::SSeedFromMnemonic
 (
     const WordListT&    aWordList,
     const std::string   aSpaceChar,
@@ -298,11 +302,11 @@ GpSecureStorage::CSP    GpMnemonicCodeGen::SSeedFromMnemonic
     return res;
 }
 
-size_t  GpMnemonicCodeGen::SFindConfByWordsCount (const size_t aWordsCount)
+size_t  GpCryptoMnemonicUtils::SFindConfByWordsCount (const size_t aWordsCount)
 {
     for (size_t id = 0; id < size_t(EntropySize::_LAST); ++id)
     {
-        const auto&     conf        = GpMnemonicCodeGen_sMnemonicK.at(id);
+        const auto&     conf        = GpCryptoMnemonicUtils_sMnemonicK.at(id);
         const size_t    wordsCount  = std::get<2>(conf);
 
         if (aWordsCount == wordsCount)
@@ -314,7 +318,7 @@ size_t  GpMnemonicCodeGen::SFindConfByWordsCount (const size_t aWordsCount)
     THROW_GP("Wrong words count"_sv);
 }
 
-u_int_16    GpMnemonicCodeGen::SFindWordId
+u_int_16    GpCryptoMnemonicUtils::SFindWordId
 (
     const WordListT&    aWordList,
     GpSpanCharR         aWord

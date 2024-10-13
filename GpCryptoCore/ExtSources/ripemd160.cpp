@@ -52,15 +52,15 @@ namespace GPlatform {
 
 struct ripemd160_state
 {
-    u_int64_t length;
+    u_int_64 length;
 
     union
     {
-        u_int32_t w[16];
-        u_int8_t  b[64];
+        u_int_32 w[16];
+        u_int_8  b[64];
     } buf;
 
-    u_int32_t       h[5];
+    u_int_32        h[5];
     size_t          bufpos;
 };
 
@@ -72,7 +72,7 @@ struct ripemd160_state
 
 /* Initial values for the chaining variables.
  * This is just 0123456789ABCDEFFEDCBA9876543210F0E1D2C3 in little-endian. */
-static const uint32_t initial_h[5] = { 0x67452301u, 0xEFCDAB89u, 0x98BADCFEu, 0x10325476u, 0xC3D2E1F0u };
+static const u_int_32 initial_h[5] = { 0x67452301u, 0xEFCDAB89u, 0x98BADCFEu, 0x10325476u, 0xC3D2E1F0u };
 
 /* Ordering of message words.  Based on the permutations rho(i) and pi(i), defined as follows:
  *
@@ -87,7 +87,7 @@ static const uint32_t initial_h[5] = { 0x67452301u, 0xEFCDAB89u, 0x98BADCFEu, 0x
  */
 
 /* Left line */
-static const uint8_t RL[5][16] = {
+static const u_int_8 RL[5][16] = {
     { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 },   /* Round 1: id */
     { 7, 4, 13, 1, 10, 6, 15, 3, 12, 0, 9, 5, 2, 14, 11, 8 },   /* Round 2: rho */
     { 3, 10, 14, 4, 9, 15, 8, 1, 2, 7, 0, 6, 13, 11, 5, 12 },   /* Round 3: rho^2 */
@@ -96,7 +96,7 @@ static const uint8_t RL[5][16] = {
 };
 
 /* Right line */
-static const uint8_t RR[5][16] = {
+static const u_int_8 RR[5][16] = {
     { 5, 14, 7, 0, 9, 2, 11, 4, 13, 6, 15, 8, 1, 10, 3, 12 },   /* Round 1: pi */
     { 6, 11, 3, 7, 0, 13, 5, 10, 14, 15, 8, 12, 4, 9, 1, 2 },   /* Round 2: rho pi */
     { 15, 5, 1, 3, 7, 14, 6, 9, 11, 8, 12, 2, 10, 0, 4, 13 },   /* Round 3: rho^2 pi */
@@ -111,7 +111,7 @@ static const uint8_t RR[5][16] = {
  */
 
 /* Shifts, left line */
-static const uint8_t SL[5][16] = {
+static const u_int_8 SL[5][16] = {
     { 11, 14, 15, 12, 5, 8, 7, 9, 11, 13, 14, 15, 6, 7, 9, 8 }, /* Round 1 */
     { 7, 6, 8, 13, 11, 9, 7, 15, 7, 12, 15, 9, 11, 7, 13, 12 }, /* Round 2 */
     { 11, 13, 6, 7, 14, 9, 13, 15, 14, 8, 13, 6, 5, 12, 7, 5 }, /* Round 3 */
@@ -120,7 +120,7 @@ static const uint8_t SL[5][16] = {
 };
 
 /* Shifts, right line */
-static const uint8_t SR[5][16] = {
+static const u_int_8 SR[5][16] = {
     { 8, 9, 9, 11, 13, 15, 15, 5, 7, 7, 8, 11, 14, 14, 12, 6 }, /* Round 1 */
     { 9, 13, 15, 7, 12, 8, 9, 11, 7, 7, 12, 7, 6, 15, 13, 11 }, /* Round 2 */
     { 9, 7, 15, 11, 8, 6, 6, 14, 12, 13, 5, 14, 13, 13, 7, 5 }, /* Round 3 */
@@ -137,7 +137,7 @@ static const uint8_t SR[5][16] = {
 #define F5(x, y, z) ((x) ^ ((y) | ~(z)))
 
 /* Round constants, left line */
-static const uint32_t KL[5] = {
+static const u_int_32 KL[5] = {
     0x00000000u,    /* Round 1: 0 */
     0x5A827999u,    /* Round 2: floor(2**30 * sqrt(2)) */
     0x6ED9EBA1u,    /* Round 3: floor(2**30 * sqrt(3)) */
@@ -146,7 +146,7 @@ static const uint32_t KL[5] = {
 };
 
 /* Round constants, right line */
-static const uint32_t KR[5] = {
+static const u_int_32 KR[5] = {
     0x50A28BE6u,    /* Round 1: floor(2**30 * cubert(2)) */
     0x5C4DD124u,    /* Round 2: floor(2**30 * cubert(3)) */
     0x6D703EF3u,    /* Round 3: floor(2**30 * cubert(5)) */
@@ -164,9 +164,9 @@ void ripemd160_init(ripemd160_state& aState)
 }
 
 #ifdef PCT_BIG_ENDIAN
-static __inline void byteswap32(uint32_t *v)
+static __inline void byteswap32(u_int_32 *v)
 {
-    union { uint32_t w; uint8_t b[4]; } x, y;
+    union { u_int_32 w; u_int_8 b[4]; } x, y;
 
     x.w = *v;
     y.b[0] = x.b[3];
@@ -181,7 +181,7 @@ static __inline void byteswap32(uint32_t *v)
 #endif//#ifdef PCT_BIG_ENDIAN
 
 #ifdef PCT_BIG_ENDIAN
-static __inline void byteswap_digest(uint32_t *p)
+static __inline void byteswap_digest(u_int_32 *p)
 {
     unsigned int i;
 
@@ -197,10 +197,10 @@ static __inline void byteswap_digest(uint32_t *p)
 /* The RIPEMD160 compression function.  Operates on aState.buf */
 static void ripemd160_compress(ripemd160_state& aState)
 {
-    uint8_t w, round;
-    uint32_t T;
-    uint32_t AL, BL, CL, DL, EL;    /* left line */
-    uint32_t AR, BR, CR, DR, ER;    /* right line */
+    u_int_8 w, round;
+    u_int_32 T;
+    u_int_32 AL, BL, CL, DL, EL;    /* left line */
+    u_int_32 AR, BR, CR, DR, ER;    /* right line */
 
     /* Sanity check */
     assert(aState.bufpos == 64);
@@ -351,8 +351,8 @@ void    ripemd160_done
     }
 
     /* Append the length */
-    aState.buf.w[14] = (uint32_t) (aState.length & 0xFFFFffffu);
-    aState.buf.w[15] = (uint32_t) ((aState.length >> 32) & 0xFFFFffffu);
+    aState.buf.w[14] = (u_int_32) (aState.length & 0xFFFFffffu);
+    aState.buf.w[15] = (u_int_32) ((aState.length >> 32) & 0xFFFFffffu);
 #ifdef PCT_BIG_ENDIAN
     byteswap32(&aState.buf.w[14]);
     byteswap32(&aState.buf.w[15]);
@@ -370,7 +370,7 @@ void    ripemd160_done
 
 void Ripemd160
 (
-    GpSpanByteR aData,
+    GpSpanByteR     aData,
     GpSpanByteRW    aResOut
 )
 {

@@ -1,25 +1,29 @@
-#include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_Import.hpp>
+#include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_FromSeed.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyPair_Ed25519.hpp>
 
-GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
+//GP_WARNING_PUSH()
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
 #include <libsodium/sodium.h>
 
-GP_WARNING_POP()
+//GP_WARNING_POP()
 
 namespace GPlatform {
 
-GpCryptoKeyFactory_Ed25519_Import::GpCryptoKeyFactory_Ed25519_Import (GpSecureStorage::CSP aSeed) noexcept:
-iSeed(std::move(aSeed))
+GpCryptoKeyFactory_Ed25519_FromSeed::GpCryptoKeyFactory_Ed25519_FromSeed (GpSecureStorage::CSP aSeed) noexcept:
+iSeed{std::move(aSeed)}
 {
 }
 
-GpCryptoKeyFactory_Ed25519_Import::~GpCryptoKeyFactory_Ed25519_Import (void) noexcept
+GpCryptoKeyFactory_Ed25519_FromSeed::~GpCryptoKeyFactory_Ed25519_FromSeed (void) noexcept
 {
 }
 
-GpCryptoKeyPair::CSP    GpCryptoKeyFactory_Ed25519_Import::Generate (void)
+GpCryptoSignKeyPair::CSP    GpCryptoKeyFactory_Ed25519_FromSeed::Generate (void)
 {
     THROW_COND_GP
     (
@@ -49,19 +53,5 @@ GpCryptoKeyPair::CSP    GpCryptoKeyFactory_Ed25519_Import::Generate (void)
 
     return MakeCSP<GpCryptoKeyPair_Ed25519>(privateBytes, std::move(publicBytes));
 }
-
-/*void  GpCryptoKeyFactory_Ed25519_Import::Serialize (GpByteWriter& aWriter) const
-{
-    aWriter.BytesWithLen("GpCryptoKeyFactory_Ed25519_Import"_sv);
-}
-
-void    GpCryptoKeyFactory_Ed25519_Import::Deserialize (GpByteReader& aReader)
-{
-    THROW_COND_GP
-    (
-        aReader.BytesWithLen() == "GpCryptoKeyFactory_Ed25519_Import"_sv,
-        "Wrong data"_sv
-    );
-}*/
 
 }// namespace GPlatform

@@ -4,13 +4,11 @@ namespace GPlatform {
 
 GpCryptoKeyPair::GpCryptoKeyPair
 (
-    const TypeTE            aType,
     GpSecureStorage::CSP    aPrivateKey,
-    GpBytesArray&&          aPublicKey
-) noexcept:
-iType      {aType},
+    GpSpanByteR             aPublicKey
+):
 iPrivateKey{std::move(aPrivateKey)},
-iPublicKey {std::move(aPublicKey)}
+iPublicKey {GpBytesArrayUtils::SMake<GpBytesArray, GpSpanByteR>(aPublicKey)}
 {
 }
 

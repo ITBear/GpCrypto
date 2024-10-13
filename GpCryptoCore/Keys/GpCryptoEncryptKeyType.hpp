@@ -5,8 +5,7 @@
 
 namespace GPlatform {
 
-GP_ENUM(GP_CRYPTO_CORE_API, GpCryptoKeyType,
-    ED_25519,           //Edwards-curve Digital Signature Algorithm (EdDSA) over Curve25519
+GP_ENUM(GP_CRYPTO_CORE_API, GpCryptoEncryptKeyType,
     X_25519             //Elliptic Curve Diffie-Hellman (ECDH) over Curve25519
 );
 

@@ -1,12 +1,12 @@
-#include <GpCrypto/GpCryptoCore/Wallet/GpCryptoWalletUtils.hpp>
+#include <GpCrypto/GpCryptoWallet/GpCryptoWalletUtils.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_HD.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_Rnd.hpp>
-#include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_Import.hpp>
+#include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_FromSeed.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/HD/GpCryptoHDKeyGen.hpp>
 
 namespace GPlatform {
 
-const GpMnemonicCodeGen::WordListT GpCryptoWalletUtils::sWordListEN =
+const GpCryptoMnemonicUtils::WordListT GpCryptoWalletUtils::sWordListEN =
 {
     "abandon","ability","able","about","above","absent","absorb","abstract","absurd","abuse","access","accident","account","accuse","achieve","acid","acoustic",
     "acquire","across","act","action","actor","actress","actual","adapt","add","addict","address","adjust","admit","adult","advance","advice","aerobic","affair",
@@ -123,17 +123,17 @@ const GpMnemonicCodeGen::WordListT GpCryptoWalletUtils::sWordListEN =
 
 GpSecureStorage::CSP    GpCryptoWalletUtils::SNewMnemonic (void)
 {
-    return GpMnemonicCodeGen::SGenerateNewMnemonic
+    return GpCryptoMnemonicUtils::SGenerateNewMnemonic
     (
         GpCryptoWalletUtils::sWordListEN,
         std::string(" "_sv),
-        GpMnemonicCodeGen::ES_128
+        GpCryptoMnemonicUtils::ES_128
     );
 }
 
 bool    GpCryptoWalletUtils::SValidateMnemonic (GpSpanCharR aMnemonic)
 {
-    return GpMnemonicCodeGen::SValidateMnemonic
+    return GpCryptoMnemonicUtils::SValidateMnemonic
     (
         sWordListEN,
         std::string(" "_sv),
@@ -147,7 +147,7 @@ GpSecureStorage::CSP    GpCryptoWalletUtils::SSeedFromMnemonic
     GpSpanCharR aPassword
 )
 {
-    return GpMnemonicCodeGen::SSeedFromMnemonic
+    return GpCryptoMnemonicUtils::SSeedFromMnemonic
     (
         sWordListEN,
         std::string(" "_sv),
@@ -171,12 +171,12 @@ GpCryptoHDKeyStorage::CSP   GpCryptoWalletUtils::SGenerateBip44 (GpSpanByteR aSe
     return changeKey;
 }
 
-GpCryptoKeyFactory::SP  GpCryptoWalletUtils::SNewHDKeyFactory (GpCryptoHDKeyStorage::CSP aBip44RootHD)
+GpCryptoSignKeyFactory::SP  GpCryptoWalletUtils::SNewHDKeyFactory (GpCryptoHDKeyStorage::CSP aBip44RootHD)
 {
     return MakeSP<GpCryptoKeyFactory_Ed25519_HD>(aBip44RootHD);
 }
 
-GpCryptoKeyFactory::SP  GpCryptoWalletUtils::SNewHDKeyFactoryMnemonic (GpSpanCharR aMnemonic, GpSpanCharR aPassword)
+GpCryptoSignKeyFactory::SP  GpCryptoWalletUtils::SNewHDKeyFactoryMnemonic (GpSpanCharR aMnemonic, GpSpanCharR aPassword)
 {
     // Validate mnemonic
     THROW_COND_GP(SValidateMnemonic(aMnemonic), "Invalid mnemonic"_sv);
@@ -191,38 +191,38 @@ GpCryptoKeyFactory::SP  GpCryptoWalletUtils::SNewHDKeyFactoryMnemonic (GpSpanCha
     return SNewHDKeyFactory(bip44Root);
 }
 
-GpCryptoKeyFactory::SP  GpCryptoWalletUtils::SNewRndKeyFactory (void)
+GpCryptoSignKeyFactory::SP  GpCryptoWalletUtils::SNewRndKeyFactory (void)
 {
     return MakeSP<GpCryptoKeyFactory_Ed25519_Rnd>();
 }
 
-GpCryptoAddress::SP GpCryptoWalletUtils::SNewAddrFromFactory
+GpCryptoWalletAddress::SP   GpCryptoWalletUtils::SNewAddrFromFactory
 (
-    GpCryptoAddressFactory& aAddrFactory,
-    GpCryptoKeyFactory&     aKeyFactory
+    GpCryptoWalletAddressFactory&   aAddrFactory,
+    GpCryptoSignKeyFactory&         aKeyFactory
 )
 {
-    GpCryptoAddress::SP addr = aAddrFactory.Generate(aKeyFactory);//MakeSP<CryptoAddress>(GpUUID::SGenRandom(), aFactory.Generate());
+    GpCryptoWalletAddress::SP addr = aAddrFactory.Generate(aKeyFactory);//MakeSP<CryptoAddress>(GpUUID::SGenRandom(), aFactory.Generate());
 
     addr.V().RecalcAddrStr();
 
     return addr;
 }
 
-GpCryptoAddress::SP GpCryptoWalletUtils::SNewAddrFromPrivateKey
+GpCryptoWalletAddress::SP   GpCryptoWalletUtils::SNewAddrFromPrivateKey
 (
-    GpCryptoAddressFactory& aAddrFactory,
-    GpSecureStorage::CSP    aPrivateKey
+    GpCryptoWalletAddressFactory&   aAddrFactory,
+    GpSecureStorage::CSP            aPrivateKey
 )
 {
-    GpCryptoKeyFactory_Ed25519_Import factory(aPrivateKey);
+    GpCryptoKeyFactory_Ed25519_FromSeed factory(aPrivateKey);
     return SNewAddrFromFactory(aAddrFactory, factory);
 }
 
-GpCryptoAddress::SP GpCryptoWalletUtils::SNewAddrFromPrivateKeyStrHex
+GpCryptoWalletAddress::SP   GpCryptoWalletUtils::SNewAddrFromPrivateKeyStrHex
 (
-    GpCryptoAddressFactory& aAddrFactory,
-    GpSecureStorage::CSP    aPrivateKeyStrHex
+    GpCryptoWalletAddressFactory&   aAddrFactory,
+    GpSecureStorage::CSP            aPrivateKeyStrHex
 )
 {
     GpSecureStorage::SP privateKey = MakeSP<GpSecureStorage>();

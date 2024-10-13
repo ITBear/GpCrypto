@@ -1,5 +1,9 @@
 #pragma once
 
+#include <GpCrypto/Config/GpConfigCrypto.hpp>
+
+#if defined(GP_CRYPTO_USE_FILE_UTILS)
+
 #include <GpCrypto/GpCryptoUtils/GpCryptoUtils_global.hpp>
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Sha2.hpp>
 #include <GpCore2/GpUtils/Macro/GpMacroClass.hpp>
@@ -115,3 +119,5 @@ private:
 };
 
 }// namespace GPlatform
+
+#endif// #if defined(GP_CRYPTO_USE_FILE_UTILS)

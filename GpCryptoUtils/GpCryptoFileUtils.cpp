@@ -1,11 +1,12 @@
 #include <GpCrypto/GpCryptoUtils/GpCryptoFileUtils.hpp>
+
+#if defined(GP_CRYPTO_USE_FILE_UTILS)
+
 #include <GpCrypto/GpCryptoCore/Encryption/GpEncryptionUtils_XChaCha20_Poly1305.hpp>
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Sha2.hpp>
-#include <GpCore2/GpUtils/Other/GpRAIIonDestruct.hpp>
 #include <GpCore2/GpUtils/Files/GpFileUtils.hpp>
 #include <GpCore2/GpUtils/Streams/GpByteWriterStorageFixedSize.hpp>
-
-#include <boost/iostreams/device/mapped_file.hpp>
+#include <GpCore2/GpUtils/Files/GpFileMemMap.hpp>
 
 namespace GPlatform {
 
@@ -37,55 +38,24 @@ void    GpCryptoFileUtils::SEncrypt
         {
             return fmt::format
             (
-                "The source file name is equal to the destination: '{}'",
+                "The source file name is the same as the destination: '{}'",
                 aFileNameSrc
             );
         }
     );
 
-    // Try to open SRC file for reading
-    THROW_COND_GP
+    // Try to open SRC file for reading and memmap it
+    GpFileMemMap mappedFileSrc;
+    const GpSpanByteR fileDataPtrSrc = mappedFileSrc.OpenAndMap
     (
-        GpFileUtils::SIsExists(aFileNameSrc),
-        [aFileNameSrc]()
-        {
-            return fmt::format
-            (
-                "File not found '{}'",
-                aFileNameSrc
-            );
-        }
+        aFileNameSrc,
+        {GpFileFlag::READ},
+        0_byte,
+        0_byte // all file
     );
 
-    const size_t srcFileSize = NumOps::SConvert<size_t>(GpFileUtils::SSize(aFileNameSrc).Value());
-
-    boost::iostreams::mapped_file_source mappedFileSrc;
-    mappedFileSrc.open(std::string{aFileNameSrc});
-
-    THROW_COND_GP
-    (
-        mappedFileSrc.is_open(),
-        [aFileNameSrc]()
-        {
-            return fmt::format
-            (
-                "Failed to open file '{}'",
-                aFileNameSrc
-            );
-        }
-    );
-
-    GpSpanByteR         fileDataPtrSrc{std::data(mappedFileSrc), std::size(mappedFileSrc)};
     GpByteReaderStorage readerStorage{fileDataPtrSrc};
     GpByteReader        reader{readerStorage};
-
-    GpRAIIonDestruct mappedFileSrcClose
-    {
-        [&]()
-        {
-            mappedFileSrc.close();
-        }
-    };
 
     // Try to open DST file for writing (considering aDstWriteMode)
     if (aDstWriteMode == DstWriteMode::THROW_IF_EXIST)
@@ -104,42 +74,19 @@ void    GpCryptoFileUtils::SEncrypt
         );
     }
 
-    const size_t encryptedSize = SEncryptedSize(aFormatVersion, srcFileSize, aMaxChunkSize);
+    const size_t encryptedSize = SEncryptedSize(aFormatVersion, fileDataPtrSrc.Count(), aMaxChunkSize);
 
-    boost::iostreams::mapped_file_params mappedFileParamsDst;
-    mappedFileParamsDst.path            = std::string{aFileNameDst};
-    mappedFileParamsDst.flags           = boost::iostreams::mapped_file::mapmode::readwrite;
-    mappedFileParamsDst.offset          = 0;
-    mappedFileParamsDst.length          = encryptedSize;
-    mappedFileParamsDst.new_file_size   = NumOps::SConvert<boost::iostreams::stream_offset>(encryptedSize);
-    mappedFileParamsDst.hint            = nullptr;
-
-    boost::iostreams::mapped_file_sink mappedFileDst;
-    mappedFileDst.open(mappedFileParamsDst);
-
-    THROW_COND_GP
+    GpFileMemMap mappedFileDst;
+    const GpSpanByteRW fileDataPtrDst = mappedFileDst.OpenAndMap
     (
-        mappedFileDst.is_open(),
-        [aFileNameDst]()
-        {
-            return fmt::format
-            (
-                "Failed to open file '{}'",
-                aFileNameDst
-            );
-        }
+        aFileNameDst,
+        {GpFileFlag::READ | GpFileFlag::WRITE | GpFileFlag::CREATE},
+        0_byte,
+        size_byte_t::SMake(encryptedSize)
     );
 
-    GpByteWriterStorageFixedSize    writerStorage{GpSpanByteRW{std::data(mappedFileDst), std::size(mappedFileDst)}};
+    GpByteWriterStorageFixedSize    writerStorage{fileDataPtrDst};
     GpByteWriter                    writer{writerStorage};
-
-    GpRAIIonDestruct mappedFileDstClose
-    {
-        [&]()
-        {
-            mappedFileDst.close();
-        }
-    };
 
     // Write header
     EncryptedFileHeader::SP fileHeaderSP = SMakeHeader
@@ -192,52 +139,24 @@ void    GpCryptoFileUtils::SDecrypt
         {
             return fmt::format
             (
-                "The source file name is equal to the destination: '{}'",
+                "The source file name is the same as the destination file name: '{}'",
                 aFileNameSrc
             );
         }
     );
 
-    // Try to open SRC file for reading
-    THROW_COND_GP
+    // Try to open SRC file for reading and memmap it
+    GpFileMemMap mappedFileSrc;
+    const GpSpanByteR fileDataPtrSrc = mappedFileSrc.OpenAndMap
     (
-        GpFileUtils::SIsExists(aFileNameSrc),
-        [aFileNameSrc]()
-        {
-            return fmt::format
-            (
-                "File not found '{}'",
-                aFileNameSrc
-            );
-        }
+        aFileNameSrc,
+        {GpFileFlag::READ},
+        0_byte,
+        0_byte
     );
 
-    boost::iostreams::mapped_file_source mappedFileSrc;
-    mappedFileSrc.open(std::string{aFileNameSrc});
-
-    THROW_COND_GP
-    (
-        mappedFileSrc.is_open(),
-        [aFileNameSrc]()
-        {
-            return fmt::format
-            (
-                "Failed to open file '{}'",
-                aFileNameSrc
-            );
-        }
-    );
-
-    GpByteReaderStorage readerStorage{GpSpanByteR{std::data(mappedFileSrc), std::size(mappedFileSrc)}};
+    GpByteReaderStorage readerStorage{fileDataPtrSrc};
     GpByteReader        reader{readerStorage};
-
-    GpRAIIonDestruct mappedFileSrcClose
-    {
-        [&]()
-        {
-            mappedFileSrc.close();
-        }
-    };
 
     // Read header
     EncryptedFileHeader::SP     headerSP    = SReadHeader(reader);
@@ -262,41 +181,18 @@ void    GpCryptoFileUtils::SDecrypt
         );
     }
 
-    boost::iostreams::mapped_file_params mappedFileParamsDst;
-    mappedFileParamsDst.path            = std::string{aFileNameDst};
-    mappedFileParamsDst.flags           = boost::iostreams::mapped_file::mapmode::readwrite;
-    mappedFileParamsDst.offset          = 0;
-    mappedFileParamsDst.length          = header.iFileSize;
-    mappedFileParamsDst.new_file_size   = NumOps::SConvert<boost::iostreams::stream_offset>(header.iFileSize);
-    mappedFileParamsDst.hint            = nullptr;
-
-    boost::iostreams::mapped_file_sink mappedFileDst;
-    mappedFileDst.open(mappedFileParamsDst);
-
-    THROW_COND_GP
+    GpFileMemMap mappedFileDst;
+    const GpSpanByteRW fileDataPtrDst = mappedFileDst.OpenAndMap
     (
-        mappedFileDst.is_open(),
-        [aFileNameDst]()
-        {
-            return fmt::format
-            (
-                "Failed to open file '{}'",
-                aFileNameDst
-            );
-        }
+        aFileNameDst,
+        {GpFileFlag::READ | GpFileFlag::WRITE | GpFileFlag::CREATE},
+        0_byte,
+        size_byte_t::SMake(header.iFileSize)
     );
 
-    GpSpanByteRW                    mappedFileDstDataPtr{std::data(mappedFileDst), std::size(mappedFileDst)};
+    GpSpanByteRW                    mappedFileDstDataPtr{fileDataPtrDst};
     GpByteWriterStorageFixedSize    writerStorage{mappedFileDstDataPtr};
     GpByteWriter                    writer{writerStorage};
-
-    GpRAIIonDestruct mappedFileDstClose
-    {
-        [&]()
-        {
-            mappedFileDst.close();
-        }
-    };
 
     // Decrypt
     SDecrypt(reader, writer, aPassword, header, aStopFlag, aEventChannelOpt);
@@ -743,3 +639,5 @@ void    GpCryptoFileUtils::SWriteHeader
 }
 
 }// namespace GPlatform
+
+#endif// #if defined(GP_CRYPTO_USE_FILE_UTILS)

@@ -3,27 +3,36 @@ TEMPLATE = subdirs
 os_linux {
 	SUBDIRS += \
 		./GpCryptoCore \
-		./GpCryptoUtils
+		./GpCryptoUtils \
+		./GpCryptoWallet
 } else:os_android {
 	SUBDIRS += \
 		./GpCryptoCore \
-		./GpCryptoUtils
+		./GpCryptoUtils \
+		./GpCryptoWallet
 } else:os_ios {
 	SUBDIRS += \
 		./GpCryptoCore \
-		./GpCryptoUtils
+		./GpCryptoUtils \
+		./GpCryptoWallet
 } else:os_windows {
 	SUBDIRS += \
 		./GpCryptoCore \
-		./GpCryptoUtils
+		./GpCryptoUtils \
+		./GpCryptoWallet
 } else:os_macx {
 	SUBDIRS += \
 		./GpCryptoCore \
-		./GpCryptoUtils
+		./GpCryptoUtils \
+		./GpCryptoWallet
 } else:os_browser {
-	SUBDIRS +=
+	SUBDIRS += \
+		./GpCryptoCore \
+		./GpCryptoUtils \		
+		./GpCryptoUtilsWasm \
+		./GpCryptoWallet
 } else {
-	error("Unknown OS. Set CONFIG+=... one of values: os_linux, os_android, os_ios, os_windows, os_macx, os_browser, os_baremetal")
+    error("Unknown OS")
 }
 
 CONFIG += ordered

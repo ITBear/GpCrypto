@@ -1,11 +1,15 @@
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_KDF_Passwd.hpp>
 
-GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
+//GP_WARNING_PUSH()
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
 #include <libsodium/sodium.h>
 
-GP_WARNING_POP()
+//GP_WARNING_POP()
 
 namespace GPlatform {
 
@@ -38,8 +42,8 @@ GpSecureStorage::CSP    GpCryptoHash_KDF_Passwd::S_H
         "Wrong salt length (must be 16 bytes)"_sv
     );
 
-GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+//GP_WARNING_PUSH()
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
     THROW_COND_GP
     (
@@ -49,7 +53,7 @@ GP_WARNING_DISABLE_GCC(duplicated-branches)
         "Wrong aBitLengthDerivedKey length"_sv
     );
 
-GP_WARNING_POP()
+//GP_WARNING_POP()
 
     const size_t derivedKeySize = size_byte_t(aBitLengthDerivedKey).As<size_t>();
 

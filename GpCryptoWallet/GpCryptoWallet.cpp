@@ -1,11 +1,11 @@
-#include <GpCrypto/GpCryptoCore/Wallet/GpCryptoWallet.hpp>
-#include <GpCrypto/GpCryptoCore/Wallet/GpCryptoWalletUtils.hpp>
+#include <GpCrypto/GpCryptoWallet/GpCryptoWallet.hpp>
+#include <GpCrypto/GpCryptoWallet/GpCryptoWalletUtils.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_Rnd.hpp>
 
 namespace GPlatform {
 
-GpCryptoWallet::GpCryptoWallet (GpCryptoAddressFactory::SP aAddrFactory) noexcept:
-iAddrFactory(std::move(aAddrFactory))
+GpCryptoWallet::GpCryptoWallet (GpCryptoWalletAddressFactory::SP aAddrFactory) noexcept:
+iAddrFactory{std::move(aAddrFactory)}
 {
 }
 
@@ -13,12 +13,12 @@ GpCryptoWallet::~GpCryptoWallet (void) noexcept
 {
 }
 
-GpCryptoAddress::SP GpCryptoWallet::GenerateNextRndAddr (void)
+GpCryptoWalletAddress::SP   GpCryptoWallet::GenerateNextRndAddr (void)
 {
     return _RndAddrGroup().GenerateNext();
 }
 
-GpCryptoAddress::SP GpCryptoWallet::GenerateNextHDAddr (const GpUUID& aGroupUID)
+GpCryptoWalletAddress::SP   GpCryptoWallet::GenerateNextHDAddr (const GpUUID& aGroupUID)
 {
     auto findGroupRes = FindHDGroup(aGroupUID);
 
@@ -31,7 +31,7 @@ GpCryptoAddress::SP GpCryptoWallet::GenerateNextHDAddr (const GpUUID& aGroupUID)
     return findGroupRes.value().V().GenerateNext();
 }
 
-std::optional<GpCryptoAddress::SP>  GpCryptoWallet::FindAddr (const GpUUID& aAddrUID)
+std::optional<GpCryptoWalletAddress::SP>    GpCryptoWallet::FindAddr (const GpUUID& aAddrUID)
 {
     //Try to search in "rnd" group
     {
@@ -59,9 +59,9 @@ std::optional<GpCryptoAddress::SP>  GpCryptoWallet::FindAddr (const GpUUID& aAdd
     return std::nullopt;
 }
 
-GpCryptoAddress::C::Vec::SP GpCryptoWallet::FindAddrAllByName (std::string_view aAddrName)
+GpCryptoWalletAddress::C::Vec::SP   GpCryptoWallet::FindAddrAllByName (std::string_view aAddrName)
 {
-    GpCryptoAddress::C::Vec::SP res;
+    GpCryptoWalletAddress::C::Vec::SP res;
 
     //Try to search in "rnd" group
     {
@@ -112,21 +112,21 @@ bool    GpCryptoWallet::DeleteAddr (const GpUUID& aAddrUID)
     return false;
 }
 
-GpCryptoAddressGroup::SP    GpCryptoWallet::AddHDGroup
+GpCryptoWalletAddressGroup::SP  GpCryptoWallet::AddHDGroup
 (
     GpSpanCharR aMnemonic,
     GpSpanCharR aPassword
 )
 {
-    GpCryptoKeyFactory::SP      hdKeyFactory    = GpCryptoWalletUtils::SNewHDKeyFactoryMnemonic(aMnemonic, aPassword);
-    GpCryptoAddressGroup::SP    addrGroup       = MakeSP<GpCryptoAddressGroup>(GpUUID::SGenRandomV4(), hdKeyFactory, iAddrFactory);
+    GpCryptoSignKeyFactory::SP      hdKeyFactory    = GpCryptoWalletUtils::SNewHDKeyFactoryMnemonic(aMnemonic, aPassword);
+    GpCryptoWalletAddressGroup::SP  addrGroup       = MakeSP<GpCryptoWalletAddressGroup>(GpUUID::SGenRandomV4(), hdKeyFactory, iAddrFactory);
 
     iHDAddrGroups.insert({addrGroup.V().UID(), addrGroup});
 
     return addrGroup;
 }
 
-std::optional<GpCryptoAddressGroup::SP> GpCryptoWallet::FindHDGroup (const GpUUID& aGroupUID)
+std::optional<GpCryptoWalletAddressGroup::SP>   GpCryptoWallet::FindHDGroup (const GpUUID& aGroupUID)
 {
     //Try to search in "HD" groups
     auto iter = iHDAddrGroups.find(aGroupUID);
@@ -155,11 +155,11 @@ bool    GpCryptoWallet::DeleteHDGroup (const GpUUID& aGroupUID)
     }
 }
 
-GpCryptoAddressGroup&   GpCryptoWallet::_RndAddrGroup (void)
+GpCryptoWalletAddressGroup& GpCryptoWallet::_RndAddrGroup (void)
 {
     if (iRndAddrGroup.IsNULL())
     {
-        iRndAddrGroup = MakeSP<GpCryptoAddressGroup>
+        iRndAddrGroup = MakeSP<GpCryptoWalletAddressGroup>
         (
             GpUUID::CE_FromString("291000ae-897b-4566-8cfd-bfaf897989f5"_sv),
             MakeSP<GpCryptoKeyFactory_Ed25519_Rnd>(),

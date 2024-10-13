@@ -1,14 +1,18 @@
 #include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_HD.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyPair_Ed25519.hpp>
-#include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_Import.hpp>
+#include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_FromSeed.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/HD/GpCryptoHDKeyGen.hpp>
 
-GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
+//GP_WARNING_PUSH()
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
 #include <libsodium/sodium.h>
 
-GP_WARNING_POP()
+//GP_WARNING_POP()
 
 namespace GPlatform {
 
@@ -21,7 +25,7 @@ GpCryptoKeyFactory_Ed25519_HD::~GpCryptoKeyFactory_Ed25519_HD (void) noexcept
 {
 }
 
-GpCryptoKeyPair::CSP    GpCryptoKeyFactory_Ed25519_HD::Generate (void)
+GpCryptoSignKeyPair::CSP    GpCryptoKeyFactory_Ed25519_HD::Generate (void)
 {
     THROW_COND_GP
     (
@@ -32,9 +36,7 @@ GpCryptoKeyPair::CSP    GpCryptoKeyFactory_Ed25519_HD::Generate (void)
     GpCryptoHDKeyStorage::SP keyStorageHD = GpCryptoHDKeyGen::SChildKeyPair(iParentHDKeyStorage.V(), iChildNumber);
     iChildNumber++;
 
-    GpCryptoKeyFactory_Ed25519_Import factory(keyStorageHD.V().KeyData());
-
-    return factory.Generate();
+    return GpCryptoKeyFactory_Ed25519_FromSeed{keyStorageHD.V().KeyData()}.Generate();
 }
 
 /*void  GpCryptoKeyFactory_Ed25519_HD::Serialize (GpByteWriter& aWriter) const

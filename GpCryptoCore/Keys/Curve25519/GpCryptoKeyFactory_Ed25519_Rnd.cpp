@@ -1,12 +1,16 @@
 #include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyFactory_Ed25519_Rnd.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/Curve25519/GpCryptoKeyPair_Ed25519.hpp>
 
-GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
+//GP_WARNING_PUSH()
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
 #include <libsodium/sodium.h>
 
-GP_WARNING_POP()
+//GP_WARNING_POP()
 
 namespace GPlatform {
 
@@ -18,7 +22,7 @@ GpCryptoKeyFactory_Ed25519_Rnd::~GpCryptoKeyFactory_Ed25519_Rnd (void) noexcept
 {
 }
 
-GpCryptoKeyPair::CSP    GpCryptoKeyFactory_Ed25519_Rnd::Generate (void)
+GpCryptoSignKeyPair::CSP    GpCryptoKeyFactory_Ed25519_Rnd::Generate (void)
 {
     GpSecureStorage::SP privateBytes = MakeSP<GpSecureStorage>();
     GpBytesArray        publicBytes;

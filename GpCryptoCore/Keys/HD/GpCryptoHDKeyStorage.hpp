@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GpCrypto/GpCryptoCore/Keys/GpCryptoKeyPair.hpp>
+#include <GpCrypto/GpCryptoCore/Keys/GpCryptoSignKeyPair.hpp>
 #include <GpCrypto/GpCryptoCore/Keys/HD/GpCryptoHDSchemeType.hpp>
 
 namespace GPlatform {

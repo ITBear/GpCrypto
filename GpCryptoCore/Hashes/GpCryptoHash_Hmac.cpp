@@ -1,12 +1,16 @@
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Hmac.hpp>
 #include <GpCore2/GpUtils/Other/GpRAIIonDestruct.hpp>
 
-GP_WARNING_PUSH()
-GP_WARNING_DISABLE_GCC(duplicated-branches)
+#if defined(RELEASE_BUILD_STATIC)
+#   define SODIUM_STATIC
+#endif
+
+//GP_WARNING_PUSH()
+//GP_WARNING_DISABLE_GCC(duplicated-branches)
 
 #include <libsodium/sodium.h>
 
-GP_WARNING_POP()
+//GP_WARNING_POP()
 
 namespace GPlatform {
 

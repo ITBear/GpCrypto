@@ -5,9 +5,9 @@
 
 namespace GPlatform {
 
-class GP_CRYPTO_CORE_API GpMnemonicCodeGen
+class GP_CRYPTO_CORE_API GpCryptoMnemonicUtils
 {
-    CLASS_REMOVE_CTRS_DEFAULT_MOVE_COPY(GpMnemonicCodeGen)
+    CLASS_REMOVE_CTRS_DEFAULT_MOVE_COPY(GpCryptoMnemonicUtils)
 
 public:
     using WordListT = std::array<std::string, 2048>;

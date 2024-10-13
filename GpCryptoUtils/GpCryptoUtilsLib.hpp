@@ -5,6 +5,6 @@
 
 namespace GPlatform {
 
-GP_DECLARE_LIB(GP_CRYPTO_UTILS_API, GpCryptoUtilsLib)
+GP_DECLARE_LIB_REGISTRATOR(GpCryptoUtilsLib)
 
 }// namespace GPlatform

@@ -72,7 +72,7 @@ GpSecureStorage::CSP    GpCryptoMnemonicUtils::SGenerateNewMnemonic
 
     {
         //TODO: implement
-        THROW_GP_NOT_IMPLEMENTED();
+        THROW_NOT_IMPLEMENTED();
 
         /*
         const size_t            spaceSize   = std::size(aSpaceChar);
@@ -126,7 +126,7 @@ bool    GpCryptoMnemonicUtils::SValidateMnemonic
     GpSpanCharR         aMnemonic
 )
 {
-    std::vector<std::string_view> mnemonicWords = StrOps::SSplit
+    std::vector<std::string_view> mnemonicWords = StrOps::SSplitExt
     (
         aMnemonic.AsStringView(),
         aSpaceChar,
@@ -146,7 +146,7 @@ bool    GpCryptoMnemonicUtils::SValidateMnemonic
     entropyWithChecksum.Resize((entropySize + 1_byte/*cheksum*/).As<size_byte_t>().As<size_t>());
     {
         //TODO: implement
-        THROW_GP_NOT_IMPLEMENTED();
+        THROW_NOT_IMPLEMENTED();
 
         /*GpSecureStorageViewRW entropyWithChecksumViewRW = entropyWithChecksum.ViewRW();
 
@@ -163,7 +163,7 @@ bool    GpCryptoMnemonicUtils::SValidateMnemonic
     // ------------- Calculate checksum ---------------
     {
         //TODO: implement
-        THROW_GP_NOT_IMPLEMENTED();
+        THROW_NOT_IMPLEMENTED();
 
         /*const size_t entropCnt = size_byte_t(entropySize).As<size_t>();
 
@@ -215,14 +215,14 @@ GpSecureStorage::CSP    GpCryptoMnemonicUtils::SSeedFromMnemonic
     const size_bit_t    aBitLengthDerivedKey
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aMnemonic.Count() > 0,
         "Mnemonic is empty"_sv
     );
 
     // Validate mnemonic
-    THROW_COND_GP
+    VERIFY
     (
         SValidateMnemonic(aWordList, aSpaceChar, aMnemonic),
         "Invalid mnemonic phrase"_sv
@@ -315,7 +315,7 @@ size_t  GpCryptoMnemonicUtils::SFindConfByWordsCount (const size_t aWordsCount)
         }
     }
 
-    THROW_GP("Wrong words count"_sv);
+    THROW("Wrong words count"_sv);
 }
 
 u_int_16    GpCryptoMnemonicUtils::SFindWordId
@@ -336,7 +336,7 @@ u_int_16    GpCryptoMnemonicUtils::SFindWordId
         ++id;
     }
 
-    THROW_GP("Word '"_sv + word + "' was not found in list"_sv);
+    THROW("Word '"_sv + word + "' was not found in list"_sv);
 }
 
 }// namespace GPlatform

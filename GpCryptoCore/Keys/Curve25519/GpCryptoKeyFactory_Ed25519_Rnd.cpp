@@ -43,7 +43,7 @@ GpCryptoSignKeyPair::CSP    GpCryptoKeyFactory_Ed25519_Rnd::Generate (void)
 
         if (res != 0)
         {
-            THROW_GP("crypto_sign_ed25519_keypair return error"_sv);
+            THROW("crypto_sign_ed25519_keypair return error"_sv);
         }
     }
 
@@ -57,7 +57,7 @@ void    GpCryptoKeyFactory_Ed25519_Rnd::Serialize (GpByteWriter& aWriter) const
 
 void    GpCryptoKeyFactory_Ed25519_Rnd::Deserialize (GpByteReader& aReader)
 {
-    THROW_COND_GP
+    VERIFY
     (
         aReader.BytesWithLen() == "GpCryptoKeyFactory_Ed25519_Rnd"_sv,
         "Wrong data"_sv

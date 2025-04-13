@@ -13,7 +13,7 @@ public:
     using HDAddrGroupsT = GpCryptoWalletAddressGroup::C::MapUuid::SP;
 
 public:
-                                                    GpCryptoWallet      (GpCryptoWalletAddressFactory::SP aAddrFactory) noexcept;
+                                                    GpCryptoWallet      (GpCryptoWalletAddressFactory::CSP aAddrFactory) noexcept;
     virtual                                         ~GpCryptoWallet     (void) noexcept;
 
     GpCryptoWalletAddress::SP                       GenerateNextRndAddr (void);
@@ -32,7 +32,7 @@ private:
     GpCryptoWalletAddressGroup&                     _RndAddrGroup       (void);
 
 private:
-    GpCryptoWalletAddressFactory::SP                iAddrFactory;
+    GpCryptoWalletAddressFactory::CSP               iAddrFactory;
     GpCryptoWalletAddressGroup::SP                  iRndAddrGroup;
     HDAddrGroupsT                                   iHDAddrGroups;
 };

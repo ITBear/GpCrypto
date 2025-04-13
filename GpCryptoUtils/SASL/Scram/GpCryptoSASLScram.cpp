@@ -36,7 +36,7 @@ void    GpCryptoSASLScram::Reset (void) noexcept
 GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ClientFirstMessage (GpSpanByteR aUserName)
 {
     // Check `aUserName` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aUserName) > 0
         && (std::size(aUserName) <= 128),
@@ -44,10 +44,10 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ClientFirstMessage (GpSpa
     );
 
     iClientNonce    = SGenerateNonce();
-    iClientUserName = GpBytesArrayUtils::SMake<SmallContainerT>(aUserName.AsStringView());
+    iClientUserName = GpArrayUtils::SMake<SmallContainerT>(aUserName.AsStringView());
 
     // Make message
-    iClientFirstWithoutHeader = GpBytesArrayUtils::SMake<SmallContainerT>
+    iClientFirstWithoutHeader = GpArrayUtils::SMake<SmallContainerT>
     (
         fmt::format
         (
@@ -57,7 +57,7 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ClientFirstMessage (GpSpa
         )
     );
 
-    SmallContainerT clientFirstMessage = GpBytesArrayUtils::SMake<SmallContainerT>
+    SmallContainerT clientFirstMessage = GpArrayUtils::SMake<SmallContainerT>
     (
         fmt::format
         (
@@ -76,14 +76,14 @@ GpCryptoSASLScram::SmallContainerT GpCryptoSASLScram::ClientFinalMessage
 )
 {
     // Check `iClientFirstWithoutHeader` size
-    THROW_COND_GP
+    VERIFY
     (
         !iClientFirstWithoutHeader.empty(),
         "`iClientFirstWithoutHeader` is empty"_sv
     );
 
     // Check `aPassword` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aPassword) > 0
         && (std::size(aPassword) <= 128),
@@ -93,12 +93,12 @@ GpCryptoSASLScram::SmallContainerT GpCryptoSASLScram::ClientFinalMessage
     // Extract attributes from server message
     const auto [serverNonce, clientNonceFromServer, serverSalt, iterationsCount] = SParseServerFirstMessage(aServerFirstMessage, std::size(iClientNonce));
 
-    iServerNonce        = GpBytesArrayUtils::SMake<SmallContainerT>(serverNonce);
-    iServerSalt         = GpBytesArrayUtils::SMake<SmallContainerT>(serverSalt);
+    iServerNonce        = GpArrayUtils::SMake<SmallContainerT>(serverNonce);
+    iServerSalt         = GpArrayUtils::SMake<SmallContainerT>(serverSalt);
     iIterationsCount    = iterationsCount;
 
     // Check iClientNonce
-    THROW_COND_GP
+    VERIFY
     (
         GpSpanByteR{iClientNonce}.AsStringView() == clientNonceFromServer,
         "Incorrect client Nonce received from server"
@@ -120,7 +120,7 @@ GpCryptoSASLScram::SmallContainerT GpCryptoSASLScram::ClientFinalMessage
     );
 
     // final client message
-    SmallContainerT clientFinalMessage = GpBytesArrayUtils::SMake<SmallContainerT>
+    SmallContainerT clientFinalMessage = GpArrayUtils::SMake<SmallContainerT>
     (
         fmt::format
         (
@@ -136,7 +136,7 @@ GpCryptoSASLScram::SmallContainerT GpCryptoSASLScram::ClientFinalMessage
 void    GpCryptoSASLScram::ValidateServerFinal (GpSpanByteR aServerFinalMessage)
 {
     // Check `aServerFinalMessage` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aServerFinalMessage) > 0
         && (std::size(aServerFinalMessage) <= 8192),
@@ -144,14 +144,14 @@ void    GpCryptoSASLScram::ValidateServerFinal (GpSpanByteR aServerFinalMessage)
     );
 
     // Check `iAuthMessage` size
-    THROW_COND_GP
+    VERIFY
     (
         !iAuthMessage.empty(),
         "`iAuthMessage` is empty"_sv
     );
 
     // Check `iServerKey` size
-    THROW_COND_GP
+    VERIFY
     (
         !iServerKey.empty(),
         "`iServerKey` is empty"_sv
@@ -161,7 +161,7 @@ void    GpCryptoSASLScram::ValidateServerFinal (GpSpanByteR aServerFinalMessage)
     SmallContainerT             serverSignatureBase64   = GpBase64::SEncode<SmallContainerT>(serverSignature, 256);
 
     // Compare final message ans server signature
-    THROW_COND_GP
+    VERIFY
     (
         GpSpanByteR{serverSignatureBase64} == SParseServerFinalMessage(aServerFinalMessage),
         "Server signature checking failed"
@@ -175,15 +175,15 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ServerFirstMessage (GpSpa
     // Extract attributes from client message
     const auto [clientNonce, clientUserName, clientFirstWithoutHeader] = SParseClientFirstMessage(aClientFirstMessage);
 
-    iClientUserName             = GpBytesArrayUtils::SMake<SmallContainerT>(clientUserName);
-    iClientNonce                = GpBytesArrayUtils::SMake<SmallContainerT>(clientNonce);
+    iClientUserName             = GpArrayUtils::SMake<SmallContainerT>(clientUserName);
+    iClientNonce                = GpArrayUtils::SMake<SmallContainerT>(clientNonce);
     iServerNonce                = SGenerateNonce();
     iServerSalt                 = SGenerateSalt();
-    iClientFirstWithoutHeader   = GpBytesArrayUtils::SMake<SmallContainerT>(clientFirstWithoutHeader);
+    iClientFirstWithoutHeader   = GpArrayUtils::SMake<SmallContainerT>(clientFirstWithoutHeader);
     iIterationsCount            = 4096;
 
     // First server message (r=<client nonce><server nonce>,s=<base64 encoded salt>,i=<iteration count>)
-    iServerFirstMessage = GpBytesArrayUtils::SMake<SmallContainerT>
+    iServerFirstMessage = GpArrayUtils::SMake<SmallContainerT>
     (
         fmt::format
         (
@@ -206,14 +206,14 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ServerFinalMessage
 )
 {
     // Check `iClientFirstWithoutHeader` size
-    THROW_COND_GP
+    VERIFY
     (
         !iClientFirstWithoutHeader.empty(),
         "`iClientFirstWithoutHeader` is empty"_sv
     );
 
     // Check `aUserName` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aUserName) > 0
         && (std::size(aUserName) <= 128),
@@ -221,7 +221,7 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ServerFinalMessage
     );
 
     // Check `aPassword` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aPassword) > 0
         && (std::size(aPassword) <= 128),
@@ -249,7 +249,7 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ServerFinalMessage
     // Validate client
     std::string_view _calulatedClientFinalMessageWithoutProof = GpSpanByteR{calulatedClientFinalMessageWithoutProof}.AsStringView().substr(std::size("c=biws,r=") - 1);
 
-    THROW_COND_GP
+    VERIFY
     (
            (GpSpanByteR{iClientUserName}.AsStringView() == aUserName.AsStringView())
         && (clientFinalMessageWithoutProof == _calulatedClientFinalMessageWithoutProof)
@@ -266,7 +266,7 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ServerFinalMessage
 
     // final server message (v=<server signature base 64>)
     const GpCryptoHash_Hmac::Res256T    serverSignature     = GpCryptoHash_Hmac::S_256(iAuthMessage, iServerKey);
-    const SmallContainerT               serverFinalMessage  = GpBytesArrayUtils::SMake<SmallContainerT>
+    const SmallContainerT               serverFinalMessage  = GpArrayUtils::SMake<SmallContainerT>
     (
         fmt::format
         (
@@ -282,7 +282,7 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::ServerFinalMessage
 
 GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::SGenerateNonce (void)
 {
-    return GpBytesArrayUtils::SMake<SmallContainerT>
+    return GpArrayUtils::SMake<SmallContainerT>
     (
         GpSRandom::S().String(GpRandomStrMode::ALPHA_NUM_AND_SPECIAL, 24)
     );
@@ -295,7 +295,7 @@ GpCryptoSASLScram::ParseServerFirstResT GpCryptoSASLScram::SParseServerFirstMess
 )
 {
     // Check `aServerFirstMessage` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aServerFirstMessage) > 0
         && (std::size(aServerFirstMessage) <= 8192),
@@ -309,7 +309,7 @@ GpCryptoSASLScram::ParseServerFirstResT GpCryptoSASLScram::SParseServerFirstMess
     size_t              iterationsCount = 4096;
 
     // Split message to parts
-    const auto messageParts = Algo::Split<char, boost::container::small_vector<std::string_view, 8>>
+    const auto messageParts = Algo::SplitExt<char, boost::container::small_vector<std::string_view, 8>>
     (
         GpSpanCharR{aServerFirstMessage},
         GpSpanCharR{","_sv},
@@ -322,7 +322,7 @@ GpCryptoSASLScram::ParseServerFirstResT GpCryptoSASLScram::SParseServerFirstMess
     for (const std::string_view messagePart: messageParts)
     {
         //
-        THROW_COND_GP
+        VERIFY
         (
             std::size(messagePart) >= 3,
             fmt::format
@@ -339,7 +339,7 @@ GpCryptoSASLScram::ParseServerFirstResT GpCryptoSASLScram::SParseServerFirstMess
             const std::string_view value = messagePart.substr(2);
 
             // Check value length
-            THROW_COND_GP
+            VERIFY
             (
                 std::size(value) > aClientNonceSize,
                 fmt::format
@@ -364,7 +364,7 @@ GpCryptoSASLScram::ParseServerFirstResT GpCryptoSASLScram::SParseServerFirstMess
             iterationsCount = NumOps::SConvert<size_t>(StrOps::SToUI64(iterationsCountStr));
         } else
         {
-            THROW_GP
+            THROW
             (
                 fmt::format
                 (
@@ -376,21 +376,21 @@ GpCryptoSASLScram::ParseServerFirstResT GpCryptoSASLScram::SParseServerFirstMess
     }
 
     // Check `serverNonce` value
-    THROW_COND_GP
+    VERIFY
     (
         std::size(serverNonce) >= 8,
         "`serverNonce` is outside the size limit"
     );
 
     // Check `serverSalt` value
-    THROW_COND_GP
+    VERIFY
     (
         std::size(serverSalt) >= 8,
         "`serverSalt` is outside the size limit"
     );
 
     // Check `hashInterationsCount` value
-    THROW_COND_GP
+    VERIFY
     (
            (iterationsCount >= 256)
         && (iterationsCount <= 8192),
@@ -409,7 +409,7 @@ GpCryptoSASLScram::ParseServerFirstResT GpCryptoSASLScram::SParseServerFirstMess
 GpSpanByteR GpCryptoSASLScram::SParseServerFinalMessage (GpSpanByteR aServerFinalMessage)
 {
     // Check `aServerFinalMessage` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aServerFinalMessage) > 0
         && (std::size(aServerFinalMessage) <= 8192),
@@ -417,7 +417,7 @@ GpSpanByteR GpCryptoSASLScram::SParseServerFinalMessage (GpSpanByteR aServerFina
     );
 
     // Split message to parts
-    const auto messageParts = Algo::Split<char, boost::container::small_vector<std::string_view, 8>>
+    const auto messageParts = Algo::SplitExt<char, boost::container::small_vector<std::string_view, 8>>
     (
         GpSpanCharR{aServerFinalMessage},
         GpSpanCharR{","_sv},
@@ -431,7 +431,7 @@ GpSpanByteR GpCryptoSASLScram::SParseServerFinalMessage (GpSpanByteR aServerFina
     for (const std::string_view messagePart: messageParts)
     {
         //
-        THROW_COND_GP
+        VERIFY
         (
             std::size(messagePart) >= 3,
             fmt::format
@@ -450,7 +450,7 @@ GpSpanByteR GpCryptoSASLScram::SParseServerFinalMessage (GpSpanByteR aServerFina
     }
 
     // Check 'serverSignature'
-    THROW_COND_GP
+    VERIFY
     (
         std::size(serverSignature) >= 8,
         "`serverSignature` is outside the size limit"
@@ -473,7 +473,7 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::SGenerateSalt (void)
 GpCryptoSASLScram::ParseClientFirstResT GpCryptoSASLScram::SParseClientFirstMessage (GpSpanByteR aClientFirstMessage)
 {
     // Check `aClientFirstMessage` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aClientFirstMessage) > 0
         && (std::size(aClientFirstMessage) <= 8192),
@@ -485,7 +485,7 @@ GpCryptoSASLScram::ParseClientFirstResT GpCryptoSASLScram::SParseClientFirstMess
     {
         std::string_view message = aClientFirstMessage.AsStringView();
 
-        THROW_COND_GP
+        VERIFY
         (
                (std::size(message) > std::size("n,,"))
             && (message.substr(0, 3) == "n,,"),
@@ -496,7 +496,7 @@ GpCryptoSASLScram::ParseClientFirstResT GpCryptoSASLScram::SParseClientFirstMess
     }
 
     // Split message to parts
-    const auto messageParts = Algo::Split<char, boost::container::small_vector<std::string_view, 8>>
+    const auto messageParts = Algo::SplitExt<char, boost::container::small_vector<std::string_view, 8>>
     (
         GpSpanCharR{clientFirstWithoutHeader},
         GpSpanCharR{","_sv},
@@ -512,7 +512,7 @@ GpCryptoSASLScram::ParseClientFirstResT GpCryptoSASLScram::SParseClientFirstMess
     for (const std::string_view messagePart: messageParts)
     {
         //
-        THROW_COND_GP
+        VERIFY
         (
             std::size(messagePart) >= 3,
             fmt::format
@@ -535,7 +535,7 @@ GpCryptoSASLScram::ParseClientFirstResT GpCryptoSASLScram::SParseClientFirstMess
 
     // Check `clientUserName` value
     // Check `aUserName` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(clientUserName) > 0
         && (std::size(clientUserName) <= 128),
@@ -543,7 +543,7 @@ GpCryptoSASLScram::ParseClientFirstResT GpCryptoSASLScram::SParseClientFirstMess
     );
 
     // Check `clientNonce` value
-    THROW_COND_GP
+    VERIFY
     (
         std::size(clientNonce) >= 8,
         "`clientNonce` is outside the size limit"
@@ -560,7 +560,7 @@ GpCryptoSASLScram::ParseClientFirstResT GpCryptoSASLScram::SParseClientFirstMess
 GpCryptoSASLScram::ParseClientFinalResT GpCryptoSASLScram::SParseClientFinalMessage (GpSpanByteR aClientFinalMessage)
 {
     // Check `aClientFinalMessage` size
-    THROW_COND_GP
+    VERIFY
     (
         std::size(aClientFinalMessage) > 0
         && (std::size(aClientFinalMessage) <= 8192),
@@ -571,7 +571,7 @@ GpCryptoSASLScram::ParseClientFinalResT GpCryptoSASLScram::SParseClientFinalMess
     std::string_view    message     = aClientFinalMessage.AsStringView();
     const size_t        messageSize = std::size(message);
 
-    THROW_COND_GP
+    VERIFY
     (
            (messageSize > std::size("c=biws,"))
         && (message.substr(0, 7) == "c=biws,"),
@@ -581,7 +581,7 @@ GpCryptoSASLScram::ParseClientFinalResT GpCryptoSASLScram::SParseClientFinalMess
     // Split message to parts
     message = message.substr(7);
 
-    const auto messageParts = Algo::Split<char, boost::container::small_vector<std::string_view, 8>>
+    const auto messageParts = Algo::SplitExt<char, boost::container::small_vector<std::string_view, 8>>
     (
         GpSpanCharR{message},
         GpSpanCharR{","_sv},
@@ -597,7 +597,7 @@ GpCryptoSASLScram::ParseClientFinalResT GpCryptoSASLScram::SParseClientFinalMess
     for (const std::string_view messagePart: messageParts)
     {
         //
-        THROW_COND_GP
+        VERIFY
         (
             std::size(messagePart) >= 3,
             fmt::format
@@ -619,14 +619,14 @@ GpCryptoSASLScram::ParseClientFinalResT GpCryptoSASLScram::SParseClientFinalMess
     }
 
     // Check `clientFinalMessageWithoutProof` value
-    THROW_COND_GP
+    VERIFY
     (
         std::size(clientFinalMessageWithoutProof) >= 10,
         "`clientFinalMessageWithoutProof` is outside the size limit"
     );
 
     // Check `clientProof` value
-    THROW_COND_GP
+    VERIFY
     (
         std::size(clientProof) >= 8,
         "`clientProof` is outside the size limit"
@@ -654,8 +654,8 @@ GpCryptoSASLScram::ProofResT    GpCryptoSASLScram::SMakeProof
 {
     // Client final message without proof
     SmallContainerT clientAndServerNonce;
-    GpBytesArrayUtils::SAppend(clientAndServerNonce, aClientNonce);
-    GpBytesArrayUtils::SAppend(clientAndServerNonce, aServerNonce);
+    GpArrayUtils::SAppend(clientAndServerNonce, aClientNonce);
+    GpArrayUtils::SAppend(clientAndServerNonce, aServerNonce);
 
     const std::string clientFinalMessageWithoutProof = fmt::format
     (
@@ -665,7 +665,7 @@ GpCryptoSASLScram::ProofResT    GpCryptoSASLScram::SMakeProof
     );
 
     // Auth message
-    SmallContainerT authMessage = GpBytesArrayUtils::SMake<SmallContainerT>
+    SmallContainerT authMessage = GpArrayUtils::SMake<SmallContainerT>
     (
         fmt::format
         (
@@ -702,7 +702,7 @@ GpCryptoSASLScram::ProofResT    GpCryptoSASLScram::SMakeProof
         clientKey,
         serverKey,
         authMessage,
-        GpBytesArrayUtils::SMake<SmallContainerT>(clientFinalMessageWithoutProof),
+        GpArrayUtils::SMake<SmallContainerT>(clientFinalMessageWithoutProof),
         clientProof
     };
 }

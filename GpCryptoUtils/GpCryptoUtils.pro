@@ -17,8 +17,8 @@ equals(var_link, "static") {
 
 # ----------- Libraries -----------
 equals(var_os, "windows") {
-	LIBS += -lGpCryptoCore$$TARGET_POSTFIX
-	LIBS += -lGpUtils$$TARGET_POSTFIX
+	LIBS += -lGpCryptoCore$$TARGET_POSTFIX$$_VER_MAJ
+	LIBS += -lGpUtils$$TARGET_POSTFIX$$_VER_MAJ
 }
 
 equals(var_os, "linux") {

@@ -7,7 +7,7 @@ GpCryptoWalletAddressGroup::GpCryptoWalletAddressGroup
 (
     const GpUUID&                       aUID,
     GpCryptoSignKeyFactory::SP          aKeyFactory,
-    GpCryptoWalletAddressFactory::SP    aAddrFactory
+    GpCryptoWalletAddressFactory::CSP   aAddrFactory
 ) noexcept:
 iUID        {aUID},
 iKeyFactory {std::move(aKeyFactory)},
@@ -23,7 +23,7 @@ GpCryptoWalletAddress::SP   GpCryptoWalletAddressGroup::GenerateNext (void)
 {
     GpCryptoWalletAddress::SP addr = GpCryptoWalletUtils::SNewAddrFromFactory(iAddrFactory.V(), iKeyFactory.V());
 
-    THROW_COND_GP
+    VERIFY
     (
         iAddrsList.try_emplace(addr.V().UID(), addr).second,
         "Addr UID is not unique"_sv

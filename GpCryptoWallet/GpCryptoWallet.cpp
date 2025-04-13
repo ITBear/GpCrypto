@@ -4,7 +4,7 @@
 
 namespace GPlatform {
 
-GpCryptoWallet::GpCryptoWallet (GpCryptoWalletAddressFactory::SP aAddrFactory) noexcept:
+GpCryptoWallet::GpCryptoWallet (GpCryptoWalletAddressFactory::CSP aAddrFactory) noexcept:
 iAddrFactory{std::move(aAddrFactory)}
 {
 }
@@ -22,7 +22,7 @@ GpCryptoWalletAddress::SP   GpCryptoWallet::GenerateNextHDAddr (const GpUUID& aG
 {
     auto findGroupRes = FindHDGroup(aGroupUID);
 
-    THROW_COND_GP
+    VERIFY
     (
         findGroupRes.has_value(),
         [&](){return "Group with UID '"_sv + aGroupUID.ToString() + "' not found"_sv;}

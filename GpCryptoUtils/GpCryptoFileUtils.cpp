@@ -20,18 +20,18 @@ void    GpCryptoFileUtils::SEncrypt
     const CryptoAlgo                aCryptoAlgo,
     const size_t                    aMaxChunkSize,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     // Check password
-    THROW_COND_GP
+    VERIFY
     (
         !aPassword.empty(),
         "Password is empty"_sv
     );
 
     // Check file names are not equal
-    THROW_COND_GP
+    VERIFY
     (
         aFileNameSrc != aFileNameDst,
         [aFileNameSrc]()
@@ -60,7 +60,7 @@ void    GpCryptoFileUtils::SEncrypt
     // Try to open DST file for writing (considering aDstWriteMode)
     if (aDstWriteMode == DstWriteMode::THROW_IF_EXIST)
     {
-        THROW_COND_GP
+        VERIFY
         (
             GpFileUtils::SIsExists(aFileNameDst) == false,
             [aFileNameDst]()
@@ -121,18 +121,18 @@ void    GpCryptoFileUtils::SDecrypt
     const std::string_view          aPassword,
     const DstWriteMode              aDstWriteMode,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     // Check password
-    THROW_COND_GP
+    VERIFY
     (
         !aPassword.empty(),
         "Password is empty"_sv
     );
 
     // Check file names are not equal
-    THROW_COND_GP
+    VERIFY
     (
         aFileNameSrc != aFileNameDst,
         [aFileNameSrc]()
@@ -167,7 +167,7 @@ void    GpCryptoFileUtils::SDecrypt
     // Try to open DST file for writing (considering aDstWriteMode)
     if (aDstWriteMode == DstWriteMode::THROW_IF_EXIST)
     {
-        THROW_COND_GP
+        VERIFY
         (
             GpFileUtils::SIsExists(aFileNameDst) == false,
             [aFileNameDst]()
@@ -208,7 +208,7 @@ size_t  GpCryptoFileUtils::SEncryptedSize
     const size_t        aMaxChunkSize
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aFormatVersion == FormatVersion::V1,
         [aFormatVersion]()
@@ -235,7 +235,7 @@ void    GpCryptoFileUtils::SEncrypt
     std::string_view                aPassword,
     const EncryptedFileHeader&      aHeader,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     if (aEventChannelOpt.has_value())
@@ -243,7 +243,7 @@ void    GpCryptoFileUtils::SEncrypt
         aEventChannelOpt.value().get().PushEvent(ProcessStageEvent::FILE_ENCRYPTION);
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         aHeader.iFormatVersion == FormatVersion::V1,
         [&aHeader]()
@@ -275,11 +275,11 @@ void    GpCryptoFileUtils::SEncrypt
         } break;
         case CryptoAlgo::AES_256:
         {
-            THROW_GP("AES-256 cryptographic algorithm is not supported yet");
+            THROW("AES-256 cryptographic algorithm is not supported yet");
         } break;
         default:
         {
-            THROW_GP("Unknown cryptographic algorithm");
+            THROW("Unknown cryptographic algorithm");
         }
     }
 }
@@ -291,7 +291,7 @@ void    GpCryptoFileUtils::SDecrypt
     std::string_view                aPassword,
     const EncryptedFileHeader&      aHeader,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     if (aEventChannelOpt.has_value())
@@ -299,7 +299,7 @@ void    GpCryptoFileUtils::SDecrypt
         aEventChannelOpt.value().get().PushEvent(ProcessStageEvent::FILE_DECRYPTION);
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         aHeader.iFormatVersion == FormatVersion::V1,
         [&aHeader]()
@@ -331,11 +331,11 @@ void    GpCryptoFileUtils::SDecrypt
         } break;
         case CryptoAlgo::AES_256:
         {
-            THROW_GP("AES-256 cryptographic algorithm is not supported yet");
+            THROW("AES-256 cryptographic algorithm is not supported yet");
         } break;
         default:
         {
-            THROW_GP("Unknown cryptographic algorithm");
+            THROW("Unknown cryptographic algorithm");
         }
     }
 }
@@ -345,10 +345,10 @@ void    GpCryptoFileUtils::SValidateDecrypt
     const EncryptedFileHeader&      aHeader,
     GpSpanByteRW                    aFileDstDataPtr,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aHeader.iFormatVersion == FormatVersion::V1,
         [&aHeader]()
@@ -378,7 +378,7 @@ void    GpCryptoFileUtils::SValidateDecrypt
             aEventChannelOpt
         );
 
-        THROW_COND_GP
+        VERIFY
         (
             GpSpanByteR{fileHash}.IsEqual(header.iFileHash),
             [&header, &fileHash]()
@@ -401,10 +401,10 @@ GpCryptoFileUtils::EncryptedFileHeader::SP  GpCryptoFileUtils::SMakeHeader
     GpSpanByteR                     aFileDataPtr,
     const size_t                    aMaxChunkSize,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aFormatVersion == FormatVersion::V1,
         [aFormatVersion]()
@@ -456,7 +456,7 @@ size_t  GpCryptoFileUtils::SHeaderSize (const FormatVersion aFormatVersion)
         + sizeof(EncryptedFileHeader::iCryptoAlgo)
         + sizeof(EncryptedFileHeader::iFileSize);
 
-    THROW_COND_GP
+    VERIFY
     (
         aFormatVersion == FormatVersion::V1,
         [aFormatVersion]()
@@ -497,7 +497,7 @@ GpCryptoFileUtils::EncryptedFileHeader::SP  GpCryptoFileUtils::SReadHeader (GpBy
     const u_int_64 fileSize = aReader.UI64();
 
     // Check format version
-    THROW_COND_GP
+    VERIFY
     (
         formatVersion == FormatVersion::V1,
         [formatVersion]()
@@ -553,21 +553,21 @@ GpCryptoFileUtils::EncryptedFileHeader::SP  GpCryptoFileUtils::SReadHeader (GpBy
 void    GpCryptoFileUtils::SValidateHeader (const EncryptedFileHeader& aHeader)
 {
     // Check name
-    THROW_COND_GP
+    VERIFY
     (
         GpSpanByteR{aHeader.iName}.IsEqual(EncryptedFileHeader{}.iName),
         "Wrong header name"_sv
     );
 
     // Check flags
-    THROW_COND_GP
+    VERIFY
     (
         aHeader.iFlags == 0,
         "Wrong flags value"_sv
     );
 
     // Check format version
-    THROW_COND_GP
+    VERIFY
     (
         aHeader.iFormatVersion == FormatVersion::V1,
         [&aHeader]()
@@ -581,7 +581,7 @@ void    GpCryptoFileUtils::SValidateHeader (const EncryptedFileHeader& aHeader)
     );
 
     // Check file size
-    THROW_COND_GP
+    VERIFY
     (
         aHeader.iFileSize > (SHeaderSize(aHeader.iFormatVersion) + 1),
         "Wrong file size"_sv
@@ -612,7 +612,7 @@ void    GpCryptoFileUtils::SWriteHeader
     aWriter.UI64(aHeader.iFileSize);
 
     // Check format version
-    THROW_COND_GP
+    VERIFY
     (
         aHeader.iFormatVersion == FormatVersion::V1,
         [&aHeader]()

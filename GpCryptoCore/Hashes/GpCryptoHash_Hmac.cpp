@@ -21,7 +21,7 @@ void    GpCryptoHash_Hmac::S_256
     GpSpanByteRW    aResOut
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
 
         aResOut.Count() >= std::tuple_size<Res256T>::value,
@@ -29,13 +29,10 @@ void    GpCryptoHash_Hmac::S_256
     );
 
     crypto_auth_hmacsha256_state hCtx;
-    GpRAIIonDestruct hCtxDestructor
-    (
-        [&]()
-        {
-            sodium_memzero(&hCtx, sizeof(hCtx));
-        }
-    );
+    GpRAIIonDestruct hCtxDestructor = [&]()
+    {
+        sodium_memzero(&hCtx, sizeof(hCtx));
+    };
 
     crypto_auth_hmacsha256_init
     (
@@ -77,17 +74,17 @@ void    GpCryptoHash_Hmac::S_512
     GpSpanByteRW    aResOut
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aResOut.Count() >= std::tuple_size<Res512T>::value,
         "aRes size too small"_sv
     );
 
     crypto_auth_hmacsha512_state hCtx;
-    GpRAIIonDestruct hCtxDestructor([&]()
+    GpRAIIonDestruct hCtxDestructor = [&]()
     {
         sodium_memzero(&hCtx, sizeof(hCtx));
-    });
+    };
 
     crypto_auth_hmacsha512_init
     (

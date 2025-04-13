@@ -23,19 +23,19 @@ GpSecureStorage::CSP    GpCryptoHash_PBKDF2::S_HmacSHA512
     const size_bit_t    aBitLengthDerivedKey
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aPassword.Count() > 0,
         "Wrong password length"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         aSalt.Count() > 0,
         "Wrong salt length"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
            (aBitLengthDerivedKey > 0_bit)
         && (aBitLengthDerivedKey % 8_bit == 0_bit)
@@ -63,11 +63,11 @@ GpSecureStorage::CSP    GpCryptoHash_PBKDF2::S_HmacSHA512
     GpSpanByteRW            dataT               = buf_U_T_KeyPtrRW.Subspan(sizeU, sizeT);
 
     crypto_auth_hmacsha512_state pshCtx, hCtx;
-    GpRAIIonDestruct hCtxDestructor([&]()
+    GpRAIIonDestruct hCtxDestructor = [&]()
     {
         sodium_memzero(&pshCtx, sizeof(pshCtx));
         sodium_memzero(&hCtx, sizeof(hCtx));
-    });
+    };
 
     crypto_auth_hmacsha512_init(&pshCtx, aPassword.PtrAs<const unsigned char*>(), aPassword.Count());
     crypto_auth_hmacsha512_update(&pshCtx, aSalt.PtrAs<const unsigned char*>(), aSalt.Count());
@@ -126,19 +126,19 @@ GpSecureStorage::CSP    GpCryptoHash_PBKDF2::S_HmacSHA256
     const size_bit_t    aBitLengthDerivedKey
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aPassword.Count() > 0,
         "Wrong password"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         aSalt.Count() > 0,
         "Wrong salt"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
            (aBitLengthDerivedKey > 0_bit)
         && (aBitLengthDerivedKey % 8_bit == 0_bit)
@@ -165,11 +165,11 @@ GpSecureStorage::CSP    GpCryptoHash_PBKDF2::S_HmacSHA256
     GpSpanByteRW            dataT               = buf_U_T_KeyPtrRW.Subspan(sizeU, sizeT);
 
     crypto_auth_hmacsha256_state pshCtx, hCtx;
-    GpRAIIonDestruct hCtxDestructor([&]()
+    GpRAIIonDestruct hCtxDestructor = [&]()
     {
         sodium_memzero(&pshCtx, sizeof(pshCtx));
         sodium_memzero(&hCtx, sizeof(hCtx));
-    });
+    };
 
     crypto_auth_hmacsha256_init(&pshCtx, aPassword.PtrAs<const unsigned char*>(), aPassword.Count());
     crypto_auth_hmacsha256_update(&pshCtx, aSalt.PtrAs<const unsigned char*>(), aSalt.Count());

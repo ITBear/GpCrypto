@@ -179,7 +179,7 @@ GpCryptoSignKeyFactory::SP  GpCryptoWalletUtils::SNewHDKeyFactory (GpCryptoHDKey
 GpCryptoSignKeyFactory::SP  GpCryptoWalletUtils::SNewHDKeyFactoryMnemonic (GpSpanCharR aMnemonic, GpSpanCharR aPassword)
 {
     // Validate mnemonic
-    THROW_COND_GP(SValidateMnemonic(aMnemonic), "Invalid mnemonic"_sv);
+    VERIFY(SValidateMnemonic(aMnemonic), "Invalid mnemonic"_sv);
 
     // Generate seed from mnemonic
     GpSecureStorage::CSP seed = SSeedFromMnemonic(aMnemonic, aPassword);
@@ -198,8 +198,8 @@ GpCryptoSignKeyFactory::SP  GpCryptoWalletUtils::SNewRndKeyFactory (void)
 
 GpCryptoWalletAddress::SP   GpCryptoWalletUtils::SNewAddrFromFactory
 (
-    GpCryptoWalletAddressFactory&   aAddrFactory,
-    GpCryptoSignKeyFactory&         aKeyFactory
+    const GpCryptoWalletAddressFactory& aAddrFactory,
+    GpCryptoSignKeyFactory&             aKeyFactory
 )
 {
     GpCryptoWalletAddress::SP addr = aAddrFactory.Generate(aKeyFactory);//MakeSP<CryptoAddress>(GpUUID::SGenRandom(), aFactory.Generate());
@@ -211,8 +211,8 @@ GpCryptoWalletAddress::SP   GpCryptoWalletUtils::SNewAddrFromFactory
 
 GpCryptoWalletAddress::SP   GpCryptoWalletUtils::SNewAddrFromPrivateKey
 (
-    GpCryptoWalletAddressFactory&   aAddrFactory,
-    GpSecureStorage::CSP            aPrivateKey
+    const GpCryptoWalletAddressFactory& aAddrFactory,
+    GpSecureStorage::CSP                aPrivateKey
 )
 {
     GpCryptoKeyFactory_Ed25519_FromSeed factory(aPrivateKey);
@@ -221,8 +221,8 @@ GpCryptoWalletAddress::SP   GpCryptoWalletUtils::SNewAddrFromPrivateKey
 
 GpCryptoWalletAddress::SP   GpCryptoWalletUtils::SNewAddrFromPrivateKeyStrHex
 (
-    GpCryptoWalletAddressFactory&   aAddrFactory,
-    GpSecureStorage::CSP            aPrivateKeyStrHex
+    const GpCryptoWalletAddressFactory& aAddrFactory,
+    GpSecureStorage::CSP                aPrivateKeyStrHex
 )
 {
     GpSecureStorage::SP privateKey = MakeSP<GpSecureStorage>();

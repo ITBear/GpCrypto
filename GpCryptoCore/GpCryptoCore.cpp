@@ -23,7 +23,7 @@ void    GpCryptoCore::SInit (void)
 
     if (sodium_init() == -1)
     {
-        THROW_GP("libsodium sodium_init() == -1"_sv);
+        THROW("libsodium sodium_init() == -1"_sv);
     }
 }
 
@@ -51,7 +51,7 @@ void    GpCryptoCore::SCheckEntropyCapacity (void)
 
         if (!isEnough)
         {
-            THROW_GP("This system doesn't provide enough entropy to quickly generate high-quality random numbers"_sv);
+            THROW("This system doesn't provide enough entropy to quickly generate high-quality random numbers"_sv);
         }
     }
 #endif//#if defined(GP_OS_LINUX) && defined(RNDGETENTCNT)

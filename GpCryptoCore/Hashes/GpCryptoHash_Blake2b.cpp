@@ -20,7 +20,7 @@ void    GpCryptoHash_Blake2b::S_256
     GpSpanByteRW                aResOut
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aResOut.Count() >= std::tuple_size<Res256T>::value,
         "aRes size too small"_sv

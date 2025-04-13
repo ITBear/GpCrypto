@@ -17,52 +17,52 @@ public:
     static size_t               SEncryptTotalSize   (size_t aSrcSize,
                                                      size_t aMaxChunkSize);
 
-    static GpBytesArray         SEncrypt            (GpSpanByteR                    aSrcData,
-                                                     size_t                         aMaxChunkSize,
-                                                     GpSpanCharR                    aPassword,
-                                                     GpSpanCharR                    aSalt,
-                                                     std::atomic_flag&              aStopFlag,
-                                                     GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
+    static GpBytesArray         SEncrypt            (GpSpanByteR                        aSrcData,
+                                                     size_t                             aMaxChunkSize,
+                                                     GpSpanCharR                        aPassword,
+                                                     GpSpanCharR                        aSalt,
+                                                     std::atomic_flag&                  aStopFlag,
+                                                     GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
 
-    static GpSecureStorage::CSP SDecrypt            (GpSpanByteR                    aSrcData,
-                                                     size_t                         aMaxChunkSize,
-                                                     GpSpanCharR                    aPassword,
-                                                     GpSpanCharR                    aSalt,
-                                                     std::atomic_flag&              aStopFlag,
-                                                     GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
+    static GpSecureStorage::CSP SDecrypt            (GpSpanByteR                        aSrcData,
+                                                     size_t                             aMaxChunkSize,
+                                                     GpSpanCharR                        aPassword,
+                                                     GpSpanCharR                        aSalt,
+                                                     std::atomic_flag&                  aStopFlag,
+                                                     GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
 
-    static void                 SEncrypt            (GpByteReader&                  aReader,
-                                                     GpByteWriter&                  aWriter,
-                                                     size_t                         aMaxChunkSize,
-                                                     GpSpanCharR                    aPassword,
-                                                     GpSpanCharR                    aSalt,
-                                                     std::atomic_flag&              aStopFlag,
-                                                     GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
+    static void                 SEncrypt            (GpByteReader&                      aReader,
+                                                     GpByteWriter&                      aWriter,
+                                                     size_t                             aMaxChunkSize,
+                                                     GpSpanCharR                        aPassword,
+                                                     GpSpanCharR                        aSalt,
+                                                     std::atomic_flag&                  aStopFlag,
+                                                     GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
 
-    static void                 SDecrypt            (GpByteReader&                  aReader,
-                                                     GpByteWriter&                  aWriter,
-                                                     size_t                         aMaxChunkSize,
-                                                     GpSpanCharR                    aPassword,
-                                                     GpSpanCharR                    aSalt,
-                                                     std::atomic_flag&              aStopFlag,
-                                                     GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
+    static void                 SDecrypt            (GpByteReader&                      aReader,
+                                                     GpByteWriter&                      aWriter,
+                                                     size_t                             aMaxChunkSize,
+                                                     GpSpanCharR                        aPassword,
+                                                     GpSpanCharR                        aSalt,
+                                                     std::atomic_flag&                  aStopFlag,
+                                                     GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
 
-    static void                 SEncrypt            (GpByteReader&                  aReader,
-                                                     GpByteWriter&                  aWriter,
-                                                     size_t                         aMaxChunkSize,
-                                                     GpSpanByteR                    aKey,
-                                                     std::atomic_flag&              aStopFlag,
-                                                     GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
+    static void                 SEncrypt            (GpByteReader&                      aReader,
+                                                     GpByteWriter&                      aWriter,
+                                                     size_t                             aMaxChunkSize,
+                                                     GpSpanByteR                        aKey,
+                                                     std::atomic_flag&                  aStopFlag,
+                                                     GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
 
-    static void                 SDecrypt            (GpByteReader&                  aReader,
-                                                     GpByteWriter&                  aWriter,
-                                                     size_t                         aMaxChunkSize,
-                                                     GpSpanByteR                    aKey,
-                                                     std::atomic_flag&              aStopFlag,
-                                                     GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
+    static void                 SDecrypt            (GpByteReader&                      aReader,
+                                                     GpByteWriter&                      aWriter,
+                                                     size_t                             aMaxChunkSize,
+                                                     GpSpanByteR                        aKey,
+                                                     std::atomic_flag&                  aStopFlag,
+                                                     GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
 
-    static GpSecureStorage::CSP SPasswordToKey      (GpSpanCharR    aPassword,
-                                                     GpSpanCharR    aSalt);
+    static GpSecureStorage::CSP SPasswordToKey      (GpSpanCharR aPassword,
+                                                     GpSpanCharR aSalt);
 };
 
 }// namespace GPlatform

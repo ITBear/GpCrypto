@@ -45,7 +45,7 @@ GpCryptoHDKeyStorage::SP    GpCryptoHDKeyGen_Ed25519::SChildKeyPair
     const size_t                aChildId
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aParentHDKeyStorage.SchemeType() == GpCryptoHDSchemeType::SLIP10_ED25519,
         "HD scheme type must be SLIP10_ED25519"_sv

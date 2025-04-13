@@ -24,7 +24,7 @@ size_t  GpEncryptionUtils_XChaCha20_Poly1305::SEncryptTotalSize
 )
 {
     // Check aSrcSize
-    THROW_COND_GP
+    VERIFY
     (
         aSrcSize > 0,
         [aSrcSize]()
@@ -38,7 +38,7 @@ size_t  GpEncryptionUtils_XChaCha20_Poly1305::SEncryptTotalSize
     );
 
     // Check aMaxChunkSize
-    THROW_COND_GP
+    VERIFY
     (
         aMaxChunkSize > 0,
         [aMaxChunkSize]()
@@ -74,7 +74,7 @@ GpBytesArray    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
     GpSpanCharR                     aPassword,
     GpSpanCharR                     aSalt,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     GpSecureStorage::CSP key = SPasswordToKey(aPassword, aSalt);
@@ -112,7 +112,7 @@ GpSecureStorage::CSP    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
     GpSpanCharR                     aPassword,
     GpSpanCharR                     aSalt,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     GpSecureStorage::CSP key = SPasswordToKey(aPassword, aSalt);
@@ -148,7 +148,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
     GpSpanCharR                     aPassword,
     GpSpanCharR                     aSalt,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     GpSecureStorage::CSP key = SPasswordToKey(aPassword, aSalt);
@@ -172,7 +172,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
     GpSpanCharR                     aPassword,
     GpSpanCharR                     aSalt,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     GpSecureStorage::CSP key = SPasswordToKey(aPassword, aSalt);
@@ -195,13 +195,13 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
     const size_t                    aMaxChunkSize,
     GpSpanByteR                     aKey,
     std::atomic_flag&               aStopFlag,
-    [[maybe_unused]] GpEventChannelAny::C::Opt::Ref aEventChannelOpt
+    [[maybe_unused]] GpEventChannelAny::C::Opts::Ref    aEventChannelOpt
 )
 {
     const u_int_64  encryptedDataTotalSize      = aReader.SizeLeft();
     u_int_64        encryptedDataProcessedSize  = 0;
 
-    THROW_COND_GP
+    VERIFY
     (
         aKey.Count() >= size_t{crypto_secretstream_xchacha20poly1305_KEYBYTES},
         "Wrong key length"_sv
@@ -219,7 +219,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
         aKey.PtrAs<const unsigned char*>()
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         initRes == 0,
         "crypto_secretstream_xchacha20poly1305_init_push return error"_sv
@@ -234,7 +234,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
     {
         if (aStopFlag.test() == true) [[unlikely]]
         {
-            THROW_GP("Process was interrupted");
+            THROW("Process was interrupted");
         }
 
         const size_t        readerSizeLeft      = aReader.SizeLeft();
@@ -256,7 +256,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
             tag
         );
 
-        THROW_COND_GP
+        VERIFY
         (
             pushRes == 0,
             "crypto_secretstream_xchacha20poly1305_push return error"_sv
@@ -274,7 +274,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
         }
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         aReader.SizeLeft() == 0,
         [&aReader]()
@@ -287,7 +287,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
         }
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         aWriter.SizeLeft() == 0,
         [&aWriter]()
@@ -308,13 +308,13 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
     const size_t                    aMaxChunkSize,
     GpSpanByteR                     aKey,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     const u_int_64  decryptedDataTotalSize      = aWriter.SizeLeft();
     u_int_64        decryptedDataProcessedSize  = 0;
 
-    THROW_COND_GP
+    VERIFY
     (
         aKey.Count() >= size_t(crypto_secretstream_xchacha20poly1305_KEYBYTES),
         "Wrong key length"_sv
@@ -336,7 +336,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
         aKey.PtrAs<const unsigned char*>()
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         initRes == 0,
         "crypto_secretstream_xchacha20poly1305_init_pull return error"_sv
@@ -352,13 +352,13 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
     {
         if (aStopFlag.test() == true) [[unlikely]]
         {
-            THROW_GP("Process was interrupted");
+            THROW("Process was interrupted");
         }
 
         const size_t    readerSizeLeft      = aReader.SizeLeft();
         const size_t    encryptChunkSize    = std::min(readerSizeLeft, aMaxChunkSize + crypto_secretstream_xchacha20poly1305_ABYTES);
 
-        THROW_COND_GP
+        VERIFY
         (
             encryptChunkSize >= (crypto_secretstream_xchacha20poly1305_ABYTES + 1),
             []()
@@ -391,7 +391,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
 
         decryptedDataProcessedSize += decryptChunkSize;
 
-        THROW_COND_GP
+        VERIFY
         (
             pullRes == 0,
             "crypto_secretstream_xchacha20poly1305_pull return error"_sv
@@ -407,7 +407,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
         }
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         tag == crypto_secretstream_xchacha20poly1305_TAG_FINAL,
         [tag]()
@@ -420,7 +420,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
         }
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         aReader.SizeLeft() == 0,
         [&aReader]()
@@ -433,7 +433,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
         }
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         aWriter.SizeLeft() == 0,
         [&aWriter]()
@@ -454,7 +454,7 @@ GpSecureStorage::CSP    GpEncryptionUtils_XChaCha20_Poly1305::SPasswordToKey
 )
 {
     // Check password
-    THROW_COND_GP
+    VERIFY
     (
         !aPassword.Empty(),
         "Password is empty"_sv

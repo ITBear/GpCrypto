@@ -22,21 +22,21 @@ GpSecureStorage::CSP    GpCryptoHash_KDF_Passwd::S_H
 )
 {
 #if (crypto_pwhash_PASSWD_MIN > 0)
-    THROW_COND_GP
+    VERIFY
     (
            (aPassword.Count() >= size_t(crypto_pwhash_PASSWD_MIN))
         && (aPassword.Count() <= size_t(crypto_pwhash_PASSWD_MAX)),
         "Wrong password length"_sv
     );
 #else
-    THROW_COND_GP
+    VERIFY
     (
         (aPassword.Count() <= size_t(crypto_pwhash_PASSWD_MAX)),
         "Wrong password length"_sv
     );
 #endif
 
-    THROW_COND_GP
+    VERIFY
     (
         aSalt.Count() == size_t(crypto_pwhash_SALTBYTES),
         "Wrong salt length (must be 16 bytes)"_sv
@@ -45,7 +45,7 @@ GpSecureStorage::CSP    GpCryptoHash_KDF_Passwd::S_H
 //GP_WARNING_PUSH()
 //GP_WARNING_DISABLE_GCC(duplicated-branches)
 
-    THROW_COND_GP
+    VERIFY
     (
            (aBitLengthDerivedKey >= size_byte_t::SMake(crypto_pwhash_BYTES_MIN))
         && (aBitLengthDerivedKey <= size_byte_t::SMake(crypto_pwhash_BYTES_MAX))
@@ -73,7 +73,7 @@ GpSecureStorage::CSP    GpCryptoHash_KDF_Passwd::S_H
         crypto_pwhash_ALG_DEFAULT
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         crypto_pwhash_res == 0,
         "crypto_pwhash return error"_sv

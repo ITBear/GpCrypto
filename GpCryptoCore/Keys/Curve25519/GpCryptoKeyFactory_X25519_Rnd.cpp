@@ -43,7 +43,7 @@ GpCryptoEncryptKeyPair::CSP GpCryptoKeyFactory_X25519_Rnd::Generate (void)
 
         if (res != 0)
         {
-            THROW_GP("crypto_box_keypair return error"_sv);
+            THROW("crypto_box_keypair return error"_sv);
         }
     }
 

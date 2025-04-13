@@ -25,7 +25,7 @@ GpCryptoKeyFactory_X25519_FromSeed::~GpCryptoKeyFactory_X25519_FromSeed (void) n
 
 GpCryptoEncryptKeyPair::CSP GpCryptoKeyFactory_X25519_FromSeed::Generate (void)
 {
-    THROW_COND_GP
+    VERIFY
     (
         iSeed.V().Size() == size_t(crypto_box_curve25519xsalsa20poly1305_SEEDBYTES),
         "Wrong seed size"_sv
@@ -48,7 +48,7 @@ GpCryptoEncryptKeyPair::CSP GpCryptoKeyFactory_X25519_FromSeed::Generate (void)
 
     if (res != 0)
     {
-        THROW_GP("crypto_box_seed_keypair return error"_sv);
+        THROW("crypto_box_seed_keypair return error"_sv);
     }
 
     return MakeCSP<GpCryptoKeyPair_X25519>(privateBytes, std::move(publicBytes));

@@ -34,10 +34,10 @@ void    GpCryptoHash_Sha2::S_256
     GpSpanByteRW                    aResOut,
     const size_t                    aMaxChunkSize,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aResOut.Count() == std::tuple_size<Res256T>::value,
         "`aRes` size is not equal to 32"_sv
@@ -49,7 +49,7 @@ void    GpCryptoHash_Sha2::S_256
 
     crypto_hash_sha256_state state;
 
-    THROW_COND_GP
+    VERIFY
     (
         crypto_hash_sha256_init(&state) == 0,
         "`crypto_hash_sha256_init` returns error"_sv
@@ -66,7 +66,7 @@ void    GpCryptoHash_Sha2::S_256
     {
         if (aStopFlag.test() == true) [[unlikely]]
         {
-            THROW_GP("Process was interrupted");
+            THROW("Process was interrupted");
         }
 
         const size_t    dataLeftSize        = aData.Count();
@@ -76,7 +76,7 @@ void    GpCryptoHash_Sha2::S_256
         GpSpanByteRW chunkBufferSpanRW{std::data(chunkBuffer), dataToProcessSize};
         chunkBufferSpanRW.CopyFrom(dataToProcessPtr);
 
-        THROW_COND_GP
+        VERIFY
         (
             crypto_hash_sha256_update
             (
@@ -99,7 +99,7 @@ void    GpCryptoHash_Sha2::S_256
         }
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         crypto_hash_sha256_final(&state, aResOut.PtrAs<unsigned char*>()) == 0,
         "`crypto_hash_sha256_final` returns error"_sv
@@ -111,7 +111,7 @@ GpCryptoHash_Sha2::Res256T  GpCryptoHash_Sha2::S_256
     GpSpanByteR                     aData,
     const size_t                    aMaxChunkSize,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     Res256T         res;
@@ -128,10 +128,10 @@ void    GpCryptoHash_Sha2::S_512
     GpSpanByteRW                    aResOut,
     const size_t                    aMaxChunkSize,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aResOut.Count() == std::tuple_size<Res512T>::value,
         "`aRes` size is not equal to 64"_sv
@@ -141,7 +141,7 @@ void    GpCryptoHash_Sha2::S_512
 
     crypto_hash_sha512_state state;
 
-    THROW_COND_GP
+    VERIFY
     (
         crypto_hash_sha512_init(&state) == 0,
         "`crypto_hash_sha512_init` returns error"_sv
@@ -158,14 +158,14 @@ void    GpCryptoHash_Sha2::S_512
     {
         if (aStopFlag.test() == true) [[unlikely]]
         {
-            THROW_GP("Process was interrupted");
+            THROW("Process was interrupted");
         }
 
         const size_t    dataLeftSize        = aData.Count();
         const size_t    dataToProcessSize   = std::min(maxChunkSize, dataLeftSize);
         GpSpanByteR     dataToProcessPtr    = aData.SubspanThenOffsetAdd(dataToProcessSize);
 
-        THROW_COND_GP
+        VERIFY
         (
             crypto_hash_sha512_update
             (
@@ -188,7 +188,7 @@ void    GpCryptoHash_Sha2::S_512
         }
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         crypto_hash_sha512_final(&state, aResOut.PtrAs<unsigned char*>()) == 0,
         "`crypto_hash_sha512_final` returns error"_sv
@@ -200,7 +200,7 @@ GpCryptoHash_Sha2::Res512T  GpCryptoHash_Sha2::S_512
     GpSpanByteR                     aData,
     const size_t                    aMaxChunkSize,
     std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opt::Ref  aEventChannelOpt
+    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
 )
 {
     Res512T         res;

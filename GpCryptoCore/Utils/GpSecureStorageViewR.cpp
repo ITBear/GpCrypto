@@ -38,7 +38,7 @@ GpSecureStorageViewR&   GpSecureStorageViewR::operator= (GpSecureStorageViewR&& 
 
 GpSpanByteR GpSecureStorageViewR::R (void) const
 {
-    THROW_COND_GP
+    VERIFY
     (
         iStorage.has_value(),
         "Storage is null"_sv

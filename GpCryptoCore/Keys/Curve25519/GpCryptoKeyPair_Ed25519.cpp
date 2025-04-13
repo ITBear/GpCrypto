@@ -63,13 +63,13 @@ GpBytesArray    GpCryptoKeyPair_Ed25519::SSign
     GpSpanByteR aPrivateKey
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aData.Count() > 0,
         "Data is empty"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         aPrivateKey.SizeInBytes() == crypto_sign_ed25519_BYTES,
         "Wrong private key size"_sv
@@ -78,7 +78,7 @@ GpBytesArray    GpCryptoKeyPair_Ed25519::SSign
     GpBytesArray sign;
     sign.resize(size_t(crypto_sign_ed25519_BYTES));
 
-    THROW_COND_GP
+    VERIFY
     (
         crypto_sign_ed25519_detached
         (
@@ -101,13 +101,13 @@ bool    GpCryptoKeyPair_Ed25519::SVerifySign
     GpSpanByteR aPublicKey
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aSign.Count() >= size_t(crypto_sign_ed25519_BYTES),
         "aSign size too small"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         aPublicKey.Count() >= size_t(crypto_sign_ed25519_PUBLICKEYBYTES),
         "aPublicKey size too small"_sv

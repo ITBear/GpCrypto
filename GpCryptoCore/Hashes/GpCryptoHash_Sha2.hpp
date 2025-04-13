@@ -16,25 +16,25 @@ public:
 public:
     static Res256T      S_256   (GpSpanByteR                    aData);
 
-    static void         S_256   (GpSpanByteR                    aData,
-                                 GpSpanByteRW                   aResOut,
-                                 size_t                         aMaxChunkSize,
-                                 std::atomic_flag&              aStopFlag,
-                                 GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
-    static Res256T      S_256   (GpSpanByteR                    aData,
-                                 size_t                         aMaxChunkSize,
-                                 std::atomic_flag&              aStopFlag,
-                                 GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
+    static void         S_256   (GpSpanByteR                        aData,
+                                 GpSpanByteRW                       aResOut,
+                                 size_t                             aMaxChunkSize,
+                                 std::atomic_flag&                  aStopFlag,
+                                 GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
+    static Res256T      S_256   (GpSpanByteR                        aData,
+                                 size_t                             aMaxChunkSize,
+                                 std::atomic_flag&                  aStopFlag,
+                                 GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
 
-    static void         S_512   (GpSpanByteR                    aData,
-                                 GpSpanByteRW                   aResOut,
-                                 size_t                         aMaxChunkSize,
-                                 std::atomic_flag&              aStopFlag,
-                                 GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
-    static Res512T      S_512   (GpSpanByteR                    aData,
-                                 size_t                         aMaxChunkSize,
-                                 std::atomic_flag&              aStopFlag,
-                                 GpEventChannelAny::C::Opt::Ref aEventChannelOpt);
+    static void         S_512   (GpSpanByteR                        aData,
+                                 GpSpanByteRW                       aResOut,
+                                 size_t                             aMaxChunkSize,
+                                 std::atomic_flag&                  aStopFlag,
+                                 GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
+    static Res512T      S_512   (GpSpanByteR                        aData,
+                                 size_t                             aMaxChunkSize,
+                                 std::atomic_flag&                  aStopFlag,
+                                 GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
 };
 
 }// namespace GPlatform

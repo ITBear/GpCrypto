@@ -15,7 +15,7 @@ public:
 public:
                                                 GpCryptoWalletAddressGroup  (const GpUUID&                      aUID,
                                                                              GpCryptoSignKeyFactory::SP         aKeyFactory,
-                                                                             GpCryptoWalletAddressFactory::SP   aAddrFactory) noexcept;
+                                                                             GpCryptoWalletAddressFactory::CSP  aAddrFactory) noexcept;
                                                 ~GpCryptoWalletAddressGroup (void) noexcept;
 
     const GpUUID&                               UID                         (void) const noexcept {return iUID;}
@@ -29,7 +29,7 @@ public:
 private:
     const GpUUID                                iUID;
     GpCryptoSignKeyFactory::SP                  iKeyFactory;
-    GpCryptoWalletAddressFactory::SP            iAddrFactory;
+    GpCryptoWalletAddressFactory::CSP           iAddrFactory;
     AddrListT                                   iAddrsList;
 };
 

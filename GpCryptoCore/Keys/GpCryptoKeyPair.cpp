@@ -8,7 +8,7 @@ GpCryptoKeyPair::GpCryptoKeyPair
     GpSpanByteR             aPublicKey
 ):
 iPrivateKey{std::move(aPrivateKey)},
-iPublicKey {GpBytesArrayUtils::SMake<GpBytesArray, GpSpanByteR>(aPublicKey)}
+iPublicKey {GpArrayUtils::SMake<GpBytesArray, GpSpanByteR>(aPublicKey)}
 {
 }
 
@@ -27,7 +27,7 @@ void    GpCryptoKeyPair::Clear (void) noexcept
 {
     const GpSecureStorage& privateBytes = PrivateBytes();
 
-    THROW_COND_GP
+    VERIFY
     (
         !privateBytes.Empty(),
         "Keypair is empty"_sv
@@ -74,7 +74,7 @@ GpSecureStorage::SP GpCryptoKeyPair::ToPrivateStrHexWithPrefix (void) const
 
 GpBytesArray    GpCryptoKeyPair::ToPublicBytesWithPrefix (void) const
 {
-    THROW_COND_GP
+    VERIFY
     (
         !iPublicBytes.empty(),
         "Keypair is empty"_sv

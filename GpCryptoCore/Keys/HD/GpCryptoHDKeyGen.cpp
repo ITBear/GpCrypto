@@ -17,7 +17,7 @@ GpCryptoHDKeyStorage::SP    GpCryptoHDKeyGen::SMasterKeyPairFromSeed
         } break;
         default:
         {
-            THROW_GP("Unknown HD scheme type "_sv + SchemeTypeT::SToString(aSchemeType));
+            THROW("Unknown HD scheme type "_sv + SchemeTypeT::SToString(aSchemeType));
         }
     }
 }
@@ -36,7 +36,7 @@ GpCryptoHDKeyStorage::SP    GpCryptoHDKeyGen::SChildKeyPair
         } break;
         default:
         {
-            THROW_GP("Unknown HD scheme type "_sv + SchemeTypeT::SToString(aParentHDKeyStorage.SchemeType()));
+            THROW("Unknown HD scheme type "_sv + SchemeTypeT::SToString(aParentHDKeyStorage.SchemeType()));
         }
     }
 }

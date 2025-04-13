@@ -30,7 +30,7 @@ GpSecureStorage::~GpSecureStorage (void) noexcept
 
 void    GpSecureStorage::Clear (void)
 {
-    THROW_COND_GP(IsViewing() == false, "Storage is viewing"_sv);
+    VERIFY(IsViewing() == false, "Storage is viewing"_sv);
 
     if (iData != nullptr)
     {
@@ -47,7 +47,7 @@ void    GpSecureStorage::Clear (void)
     iSizeUsed       = 0;
     iSizeAllocated  = 0;
     iAlignment      = 1;
-    //iIsViewing    = false;//THROW_COND_GP(IsViewing() == false, "Storage is viewing"_sv);
+    //iIsViewing    = false;//VERIFY(IsViewing() == false, "Storage is viewing"_sv);
 }
 
 void    GpSecureStorage::Resize (const size_t aSize)
@@ -76,7 +76,7 @@ void    GpSecureStorage::Reserve
     const size_t aAlignment
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         IsViewing() == false,
         "Storage is viewing"_sv
@@ -89,7 +89,7 @@ void    GpSecureStorage::Reserve
         return;
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         (Alignment() % aAlignment) == 0,
         "Wrong alignment"_sv
@@ -113,13 +113,13 @@ void    GpSecureStorage::Set (GpSecureStorage&& aStorage)
         return;
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         aStorage.IsViewing() == false,
         "aStorage is viewing"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         IsViewing() == false,
         "Storage is viewing"_sv
@@ -145,19 +145,19 @@ void    GpSecureStorage::CopyFrom (const GpSecureStorage& aStorage)
         return;
     }
 
-    THROW_COND_GP
+    VERIFY
     (
         aStorage.IsViewing() == false,
         "aStorage is viewing"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         IsViewing() == false,
         "Storage is viewing"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         (Alignment() % aStorage.Alignment()) == 0,
         "Wrong alignment"_sv
@@ -174,7 +174,7 @@ void    GpSecureStorage::CopyFrom (GpSpanByteR aData)
 
 GpSecureStorageViewR    GpSecureStorage::ViewR (void) const
 {
-    THROW_COND_GP
+    VERIFY
     (
         IsViewing() == false,
         "Storage is viewing"_sv
@@ -185,7 +185,7 @@ GpSecureStorageViewR    GpSecureStorage::ViewR (void) const
 
 GpSecureStorageViewRW   GpSecureStorage::ViewRW (void)
 {
-    THROW_COND_GP
+    VERIFY
     (
         IsViewing() == false,
         "Storage is viewing"_sv
@@ -204,7 +204,7 @@ void    GpSecureStorage::LockRW (void) const
 #if !defined(OS_BROWSER)
     if (sodium_mprotect_noaccess(iData) != 0)
     {
-        THROW_GP("sodium_mprotect_noaccess return error"_sv);
+        THROW("sodium_mprotect_noaccess return error"_sv);
     }
 #endif//#if !defined(OS_BROWSER)
 }
@@ -219,7 +219,7 @@ void    GpSecureStorage::UnlockRW (void)
 #if !defined(OS_BROWSER)
     if (sodium_mprotect_readwrite(iData) != 0)
     {
-        THROW_GP("sodium_mprotect_readwrite return error"_sv);
+        THROW("sodium_mprotect_readwrite return error"_sv);
     }
 #endif//#if !defined(OS_BROWSER)
 }
@@ -234,14 +234,14 @@ void    GpSecureStorage::UnlockR (void) const
 #if !defined(OS_BROWSER)
     if (sodium_mprotect_readonly(iData) != 0)
     {
-        THROW_GP("sodium_mprotect_readonly return error"_sv);
+        THROW("sodium_mprotect_readonly return error"_sv);
     }
 #endif//#if !defined(OS_BROWSER)
 }
 
 void    GpSecureStorage::SetViewing (const bool aValue) const
 {
-    THROW_COND_GP
+    VERIFY
     (
         iIsViewing != aValue,
         "Same value"_sv
@@ -268,13 +268,13 @@ void    GpSecureStorage::ClearAndAllocate
 {
     Clear();
 
-    THROW_COND_GP
+    VERIFY
     (
         (aSize >= 1) && (aSize <= 32768),
         "aSize is out of range"_sv
     );
 
-    THROW_COND_GP
+    VERIFY
     (
         (aSize % aAlignment) == 0,
         "Wrong size for alignment"_sv
@@ -283,7 +283,7 @@ void    GpSecureStorage::ClearAndAllocate
 #if defined(OS_BROWSER)
     iData = reinterpret_cast<std::byte*>(std::malloc(aSize));
 
-    THROW_COND_GP
+    VERIFY
     (
         iData != nullptr,
         "std::malloc return nullptr"_sv
@@ -291,7 +291,7 @@ void    GpSecureStorage::ClearAndAllocate
 #else
     iData = reinterpret_cast<std::byte*>(sodium_allocarray((aSize / aAlignment), aAlignment));
 
-    THROW_COND_GP
+    VERIFY
     (
         iData != nullptr,
         "sodium_malloc return nullptr"_sv
@@ -305,7 +305,7 @@ void    GpSecureStorage::ClearAndAllocate
     if (sodium_mlock(iData, iSizeAllocated) != 0)
     {
         Clear();
-        THROW_GP("sodium_mlock return error"_sv);
+        THROW("sodium_mlock return error"_sv);
     }
 #endif//#if !defined(OS_BROWSER)
 }

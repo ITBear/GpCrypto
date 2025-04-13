@@ -20,7 +20,7 @@ void    GpCryptoRandom::SEntropy
     GpSpanByteRW    aResOut
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aResOut.Count() >= aSize,
         "Out of range"_sv
@@ -29,10 +29,10 @@ void    GpCryptoRandom::SEntropy
     size_t      bytesLeft   = aSize;
     u_int_32    randVal     = 0;
 
-    GpRAIIonDestruct randValDestructor([&]()
+    GpRAIIonDestruct randValDestructor = [&]()
     {
         sodium_memzero(&randVal, sizeof(randVal));
-    });
+    };
 
     while (bytesLeft > 0)
     {

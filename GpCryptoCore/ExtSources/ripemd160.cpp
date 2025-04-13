@@ -296,7 +296,7 @@ void ripemd160_process
     size_t lengthLeft   = aData.Count();
 
     /* We never leave a full buffer */
-    THROW_COND_GP
+    VERIFY
     (
         aState.bufpos < 64,
         "Buffer ptr is out of range"_sv
@@ -335,7 +335,7 @@ void    ripemd160_done
     GpSpanByteRW        aResOut
 )
 {
-    THROW_COND_GP
+    VERIFY
     (
         aResOut.Count() >= size_t(RIPEMD160_DIGEST_SIZE),
         "aRes size too small"_sv

@@ -17,9 +17,9 @@ equals(var_link, "static") {
 
 # ----------- Libraries -----------
 equals(var_os, "windows") {
-	LIBS += -lGpUtils$$TARGET_POSTFIX
+	LIBS += -lGpUtils$$TARGET_POSTFIX$$_VER_MAJ
 
-	LIBS += -lutf8proc$$TARGET_POSTFIX
+	LIBS += -lutf8proc$$TARGET_POSTFIX$$_VER_MAJ
 	LIBS += -llibsodium
 }
 

@@ -27,7 +27,7 @@ GpCryptoKeyFactory_Ed25519_HD::~GpCryptoKeyFactory_Ed25519_HD (void) noexcept
 
 GpCryptoSignKeyPair::CSP    GpCryptoKeyFactory_Ed25519_HD::Generate (void)
 {
-    THROW_COND_GP
+    VERIFY
     (
         iParentHDKeyStorage.V().SchemeType() == GpCryptoHDSchemeType::SLIP10_ED25519,
         "HD scheme type must be SLIP10_ED25519"_sv
@@ -62,7 +62,7 @@ void    GpCryptoKeyFactory_Ed25519_HD::Deserialize (GpByteReader& aReader)
     //iParentHDKeyStorage
     {
         //SchemeType
-        THROW_COND_GP
+        VERIFY
         (
             aReader.BytesWithLen() == GpCryptoHDSchemeType::SToString(iParentHDKeyStorage.SchemeType()),
             "Wrong SchemeType"_sv

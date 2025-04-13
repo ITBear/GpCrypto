@@ -17,7 +17,7 @@ protected:
 public:
     virtual                             ~GpCryptoWalletAddressFactory   (void) noexcept {}
 
-    virtual GpCryptoWalletAddress::SP   Generate                        (GpCryptoSignKeyFactory& aKeyFactory) = 0;
+    virtual GpCryptoWalletAddress::SP   Generate                        (GpCryptoSignKeyFactory& aKeyFactory) const = 0;
 };
 
 }// namespace GPlatform

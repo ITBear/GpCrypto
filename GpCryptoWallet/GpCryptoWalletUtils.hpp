@@ -20,12 +20,12 @@ public:
     static GpCryptoSignKeyFactory::SP   SNewHDKeyFactory                (GpCryptoHDKeyStorage::CSP aBip44RootHD);
     static GpCryptoSignKeyFactory::SP   SNewHDKeyFactoryMnemonic        (GpSpanCharR aMnemonic, GpSpanCharR aPassword);
     static GpCryptoSignKeyFactory::SP   SNewRndKeyFactory               (void);
-    static GpCryptoWalletAddress::SP    SNewAddrFromFactory             (GpCryptoWalletAddressFactory&  aAddrFactory,
-                                                                         GpCryptoSignKeyFactory&        aKeyFactory);
-    static GpCryptoWalletAddress::SP    SNewAddrFromPrivateKey          (GpCryptoWalletAddressFactory&  aAddrFactory,
-                                                                         GpSecureStorage::CSP           aPrivateKey);
-    static GpCryptoWalletAddress::SP    SNewAddrFromPrivateKeyStrHex    (GpCryptoWalletAddressFactory&  aAddrFactory,
-                                                                         GpSecureStorage::CSP           aPrivateKeyStrHex);
+    static GpCryptoWalletAddress::SP    SNewAddrFromFactory             (const GpCryptoWalletAddressFactory&    aAddrFactory,
+                                                                         GpCryptoSignKeyFactory&                aKeyFactory);
+    static GpCryptoWalletAddress::SP    SNewAddrFromPrivateKey          (const GpCryptoWalletAddressFactory&    aAddrFactory,
+                                                                         GpSecureStorage::CSP                   aPrivateKey);
+    static GpCryptoWalletAddress::SP    SNewAddrFromPrivateKeyStrHex    (const GpCryptoWalletAddressFactory&    aAddrFactory,
+                                                                         GpSecureStorage::CSP                   aPrivateKeyStrHex);
 
 private:
     static const GpCryptoMnemonicUtils::WordListT   sWordListEN;

@@ -23,8 +23,8 @@ public:
     const GpSpanByteR           PublicKey           (void) const noexcept {return iPublicKey;}
 
 private:
-    GpSecureStorage::CSP        iPrivateKey;
-    GpBytesArray                iPublicKey;
+    GpSecureStorage::CSP    iPrivateKey;
+    GpByteArray             iPublicKey;
 };
 
 }// namespace GPlatform

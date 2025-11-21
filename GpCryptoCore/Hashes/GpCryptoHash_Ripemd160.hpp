@@ -12,10 +12,10 @@ public:
     using Res160T = std::array<std::byte, 20>;
 
 public:
-    static void         S_H (GpSpanByteR    aData,
-                             GpSpanByteRW   aResOut);
+    static void     S_H (GpSpanByteR    aData,
+                         GpSpanByteRW   aResOut);
 
-    static Res160T      S_H (GpSpanByteR aData);
+    static Res160T  S_H (GpSpanByteR aData);
 };
 
 }// namespace GPlatform

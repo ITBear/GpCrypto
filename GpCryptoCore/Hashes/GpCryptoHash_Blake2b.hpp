@@ -13,12 +13,12 @@ public:
     using Res256T = std::array<std::byte, 32>;
 
 public:
-    static void         S_256   (GpSpanByteR                aData,
-                                 std::optional<GpSpanByteR> aKey,
-                                 GpSpanByteRW               aResOut);
+    static void     S_256   (GpSpanByteR                aData,
+                             std::optional<GpSpanByteR> aKey,
+                             GpSpanByteRW               aResOut);
 
-    static Res256T      S_256   (GpSpanByteR                aData,
-                                 std::optional<GpSpanByteR> aKey = std::nullopt);
+    static Res256T  S_256   (GpSpanByteR                aData,
+                             std::optional<GpSpanByteR> aKey = std::nullopt);
 };
 
 }// namespace GPlatform

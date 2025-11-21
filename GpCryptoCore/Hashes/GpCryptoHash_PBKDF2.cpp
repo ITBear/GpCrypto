@@ -1,5 +1,5 @@
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_PBKDF2.hpp>
-#include <GpCore2/GpUtils/Other/GpRAIIonDestruct.hpp>
+#include <GpCore2/GpUtils/Other/GpDefer.hpp>
 #include <GpCore2/GpUtils/Types/Bits/GpBitOps.hpp>
 
 //GP_WARNING_PUSH()
@@ -63,7 +63,7 @@ GpSecureStorage::CSP    GpCryptoHash_PBKDF2::S_HmacSHA512
     GpSpanByteRW            dataT               = buf_U_T_KeyPtrRW.Subspan(sizeU, sizeT);
 
     crypto_auth_hmacsha512_state pshCtx, hCtx;
-    GpRAIIonDestruct hCtxDestructor = [&]()
+    GpDefer hCtxDestructor = [&]()
     {
         sodium_memzero(&pshCtx, sizeof(pshCtx));
         sodium_memzero(&hCtx, sizeof(hCtx));
@@ -165,7 +165,7 @@ GpSecureStorage::CSP    GpCryptoHash_PBKDF2::S_HmacSHA256
     GpSpanByteRW            dataT               = buf_U_T_KeyPtrRW.Subspan(sizeU, sizeT);
 
     crypto_auth_hmacsha256_state pshCtx, hCtx;
-    GpRAIIonDestruct hCtxDestructor = [&]()
+    GpDefer hCtxDestructor = [&]()
     {
         sodium_memzero(&pshCtx, sizeof(pshCtx));
         sodium_memzero(&hCtx, sizeof(hCtx));

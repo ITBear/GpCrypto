@@ -25,21 +25,21 @@ public:
     GpSpanByteR                 Addr                    (void) const noexcept {return iAddr;}
     std::string_view            AddrStr                 (void) const noexcept {return iAddrStr;}
 
-    GpBytesArray                SignData                (GpSpanByteR aData) const;
+    GpByteArray                 SignData                (GpSpanByteR aData) const;
     bool                        VerifySign              (GpSpanByteR    aData,
                                                          GpSpanByteR    aSign) const;
 
     void                        RecalcAddrStr           (void);
 
 protected:
-    virtual std::tuple<GpBytesArray, std::string>
+    virtual std::tuple<GpByteArray, std::string>
                                 OnRecalcAddrStr         (void) const = 0;
 
 private:
     const GpUUID                iUID;
     GpCryptoSignKeyPair::CSP    iKeyPair;
     std::string                 iName;
-    GpBytesArray                iAddr;
+    GpByteArray                 iAddr;
     std::string                 iAddrStr;
 };
 

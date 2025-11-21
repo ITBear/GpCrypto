@@ -1,10 +1,6 @@
 #pragma once
 
 #include <GpCrypto/GpCryptoCore/GpCryptoCore_global.hpp>
-#include <GpCore2/GpUtils/Other/GpLinkedLibsInfo.hpp>
+#include <GpCore2/GpUtils/Other/GpStaticInitializer.hpp>
 
-namespace GPlatform {
-
-GP_DECLARE_LIB_REGISTRATOR(GpCryptoCoreLib)
-
-}// namespace GPlatform
+GP_STATIC_INITIALIZER(GP_CRYPTO_CORE_API, GpCryptoCore)

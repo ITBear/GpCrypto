@@ -20,7 +20,7 @@ os_linux {
 		./GpCryptoCore \
 		./GpCryptoUtils \
 		./GpCryptoWallet
-} else:os_macx {
+} else:os_macos {
 	SUBDIRS += \
 		./GpCryptoCore \
 		./GpCryptoUtils \

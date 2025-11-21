@@ -4,8 +4,6 @@
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_PBKDF2.hpp>
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Sha2.hpp>
 
-#include <iostream>
-
 namespace GPlatform {
 
 GpCryptoSASLScram::GpCryptoSASLScram
@@ -465,7 +463,7 @@ GpCryptoSASLScram::SmallContainerT  GpCryptoSASLScram::SGenerateSalt (void)
 {
     GpCryptoSASLScram::SmallContainerT res;
 
-    GpSRandom::S().BytesArray<SmallContainerT>(res, 8);
+    GpSRandom::S().ByteArray<SmallContainerT>(res, 8);
 
     return res;
 }

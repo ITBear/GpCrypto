@@ -13,8 +13,8 @@
 #   include <GpCrypto/Config/GpConfigCrypto_os_ios.hpp>
 #elif defined(GP_OS_IOS_SIMULATOR)
 #   include <GpCrypto/Config/GpConfigCrypto_os_ios_simulator.hpp>
-#elif defined(GP_OS_MACOSX)
-#   include <GpCrypto/Config/GpConfigCrypto_os_macosx.hpp>
+#elif defined(GP_OS_MACOS)
+#   include <GpCrypto/Config/GpConfigCrypto_os_macos.hpp>
 #elif defined(GP_OS_BARE_METAL)
 #   include <GpCrypto/Config/GpConfigCrypto_os_baremetal.hpp>
 #elif defined(GP_OS_BROWSER)

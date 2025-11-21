@@ -12,15 +12,15 @@ namespace GPlatform {
 
 void    GpCryptoFileUtils::SEncrypt
 (
-    const std::string_view          aFileNameSrc,
-    const std::string_view          aFileNameDst,
-    const std::string_view          aPassword,
-    const DstWriteMode              aDstWriteMode,
-    const FormatVersion             aFormatVersion,
-    const CryptoAlgo                aCryptoAlgo,
-    const size_t                    aMaxChunkSize,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    const std::string_view  aFileNameSrc,
+    const std::string_view  aFileNameDst,
+    const std::string_view  aPassword,
+    const DstWriteMode      aDstWriteMode,
+    const FormatVersion     aFormatVersion,
+    const CryptoAlgo        aCryptoAlgo,
+    const size_t            aMaxChunkSize,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     // Check password
@@ -96,7 +96,7 @@ void    GpCryptoFileUtils::SEncrypt
         fileDataPtrSrc,
         aMaxChunkSize,
         aStopFlag,
-        aEventChannelOpt
+        aProgressChannel
     );
 
     SValidateHeader(fileHeaderSP.Vn());
@@ -110,18 +110,18 @@ void    GpCryptoFileUtils::SEncrypt
         aPassword,
         fileHeaderSP.Vn(),
         aStopFlag,
-        aEventChannelOpt
+        aProgressChannel
     );
 }
 
 void    GpCryptoFileUtils::SDecrypt
 (
-    const std::string_view          aFileNameSrc,
-    const std::string_view          aFileNameDst,
-    const std::string_view          aPassword,
-    const DstWriteMode              aDstWriteMode,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    const std::string_view  aFileNameSrc,
+    const std::string_view  aFileNameDst,
+    const std::string_view  aPassword,
+    const DstWriteMode      aDstWriteMode,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     // Check password
@@ -195,10 +195,10 @@ void    GpCryptoFileUtils::SDecrypt
     GpByteWriter                    writer{writerStorage};
 
     // Decrypt
-    SDecrypt(reader, writer, aPassword, header, aStopFlag, aEventChannelOpt);
+    SDecrypt(reader, writer, aPassword, header, aStopFlag, aProgressChannel);
 
     // Validate data after decrypt
-    SValidateDecrypt(header, mappedFileDstDataPtr, aStopFlag, aEventChannelOpt);
+    SValidateDecrypt(header, mappedFileDstDataPtr, aStopFlag, aProgressChannel);
 }
 
 size_t  GpCryptoFileUtils::SEncryptedSize
@@ -230,17 +230,25 @@ size_t  GpCryptoFileUtils::SEncryptedSize
 
 void    GpCryptoFileUtils::SEncrypt
 (
-    GpByteReader&                   aReader,
-    GpByteWriter&                   aWriter,
-    std::string_view                aPassword,
-    const EncryptedFileHeader&      aHeader,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpByteReader&               aReader,
+    GpByteWriter&               aWriter,
+    std::string_view            aPassword,
+    const EncryptedFileHeader&  aHeader,
+    std::atomic_flag&           aStopFlag,
+    ProgressChannelOptRefT      aProgressChannel
 )
 {
-    if (aEventChannelOpt.has_value())
+    if (aProgressChannel.has_value())
     {
-        aEventChannelOpt.value().get().PushEvent(ProcessStageEvent::FILE_ENCRYPTION);
+        GpCryptoProgress::Event event
+        {
+            .iProgress      = 0.0,
+            .iProgressSize  = 0,
+            .iTotalSize     = 0,
+            .iAttrCode      = s_int_64(ProcessStage::FILE_ENCRYPTION)
+        };
+
+        aProgressChannel.value().get().PushEvent(event);
     }
 
     VERIFY
@@ -270,7 +278,7 @@ void    GpCryptoFileUtils::SEncrypt
                 aPassword,
                 header.iSalt.AsStringView(),
                 aStopFlag,
-                aEventChannelOpt
+                aProgressChannel
             );
         } break;
         case CryptoAlgo::AES_256:
@@ -286,17 +294,25 @@ void    GpCryptoFileUtils::SEncrypt
 
 void    GpCryptoFileUtils::SDecrypt
 (
-    GpByteReader&                   aReader,
-    GpByteWriter&                   aWriter,
-    std::string_view                aPassword,
-    const EncryptedFileHeader&      aHeader,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpByteReader&               aReader,
+    GpByteWriter&               aWriter,
+    std::string_view            aPassword,
+    const EncryptedFileHeader&  aHeader,
+    std::atomic_flag&           aStopFlag,
+    ProgressChannelOptRefT      aProgressChannel
 )
 {
-    if (aEventChannelOpt.has_value())
+    if (aProgressChannel.has_value())
     {
-        aEventChannelOpt.value().get().PushEvent(ProcessStageEvent::FILE_DECRYPTION);
+        GpCryptoProgress::Event event
+        {
+            .iProgress      = 0.0,
+            .iProgressSize  = 0,
+            .iTotalSize     = 0,
+            .iAttrCode      = s_int_64(ProcessStage::FILE_DECRYPTION)
+        };
+
+        aProgressChannel.value().get().PushEvent(event);
     }
 
     VERIFY
@@ -326,7 +342,7 @@ void    GpCryptoFileUtils::SDecrypt
                 aPassword,
                 header.iSalt.AsStringView(),
                 aStopFlag,
-                aEventChannelOpt
+                aProgressChannel
             );
         } break;
         case CryptoAlgo::AES_256:
@@ -342,10 +358,10 @@ void    GpCryptoFileUtils::SDecrypt
 
 void    GpCryptoFileUtils::SValidateDecrypt
 (
-    const EncryptedFileHeader&      aHeader,
-    GpSpanByteRW                    aFileDstDataPtr,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    const EncryptedFileHeader&  aHeader,
+    GpSpanByteRW                aFileDstDataPtr,
+    std::atomic_flag&           aStopFlag,
+    ProgressChannelOptRefT      aProgressChannel
 )
 {
     VERIFY
@@ -365,9 +381,17 @@ void    GpCryptoFileUtils::SValidateDecrypt
 
     // Check hashsum
     {
-        if (aEventChannelOpt.has_value())
+        if (aProgressChannel.has_value())
         {
-            aEventChannelOpt.value().get().PushEvent(ProcessStageEvent::HASH_CALCULATION);
+            GpCryptoProgress::Event event
+            {
+                .iProgress      = 0.0,
+                .iProgressSize  = 0,
+                .iTotalSize     = 0,
+                .iAttrCode      = s_int_64(ProcessStage::HASH_CALCULATION)
+            };
+
+            aProgressChannel.value().get().PushEvent(event);
         }
 
         const GpCryptoHash_Sha2::Res256T fileHash = GpCryptoHash_Sha2::S_256
@@ -375,7 +399,7 @@ void    GpCryptoFileUtils::SValidateDecrypt
             aFileDstDataPtr,
             header.iMaxChunkSize,
             aStopFlag,
-            aEventChannelOpt
+            aProgressChannel
         );
 
         VERIFY
@@ -396,12 +420,12 @@ void    GpCryptoFileUtils::SValidateDecrypt
 
 GpCryptoFileUtils::EncryptedFileHeader::SP  GpCryptoFileUtils::SMakeHeader
 (
-    const FormatVersion             aFormatVersion,
-    const CryptoAlgo                aCryptoAlgo,
-    GpSpanByteR                     aFileDataPtr,
-    const size_t                    aMaxChunkSize,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    const FormatVersion     aFormatVersion,
+    const CryptoAlgo        aCryptoAlgo,
+    GpSpanByteR             aFileDataPtr,
+    const size_t            aMaxChunkSize,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     VERIFY
@@ -428,9 +452,17 @@ GpCryptoFileUtils::EncryptedFileHeader::SP  GpCryptoFileUtils::SMakeHeader
 
     // Calculate hash
     {
-        if (aEventChannelOpt.has_value())
+        if (aProgressChannel.has_value())
         {
-            aEventChannelOpt.value().get().PushEvent(ProcessStageEvent::HASH_CALCULATION);
+            GpCryptoProgress::Event event
+            {
+                .iProgress      = 0.0,
+                .iProgressSize  = 0,
+                .iTotalSize     = 0,
+                .iAttrCode      = s_int_64(ProcessStage::HASH_CALCULATION)
+            };
+
+            aProgressChannel.value().get().PushEvent(event);
         }
 
         header.iFileHash = GpCryptoHash_Sha2::S_256
@@ -438,11 +470,11 @@ GpCryptoFileUtils::EncryptedFileHeader::SP  GpCryptoFileUtils::SMakeHeader
             aFileDataPtr,
             aMaxChunkSize,
             aStopFlag,
-            aEventChannelOpt
+            aProgressChannel
         );
     }
 
-    header.iSalt            = GpUUID::SGenRandomV4();
+    header.iSalt = GpUUID::SGenRandomV4();
 
     return headerSP;
 }

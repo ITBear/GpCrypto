@@ -36,7 +36,7 @@ bool    GpCryptoWalletAddressGroup::Delete (const GpUUID& aAddrUID)
 {
     auto iter = iAddrsList.find(aAddrUID);
 
-    if (iter == iAddrsList.end())
+    if (iter == std::end(iAddrsList))
     {
         return false;
     }
@@ -50,7 +50,7 @@ std::optional<GpCryptoWalletAddress::SP>    GpCryptoWalletAddressGroup::Find (co
 {
     auto iter = iAddrsList.find(aAddrUID);
 
-    if (iter == iAddrsList.end())
+    if (iter == std::end(iAddrsList))
     {
         return std::nullopt;
     }

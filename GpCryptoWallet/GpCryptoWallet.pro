@@ -28,6 +28,13 @@ equals(var_os, "linux") {
 	LIBS += -lfmt
 }
 
+equals(var_os, "macos") {
+	LIBS += -lGpCryptoCore$$TARGET_POSTFIX
+	LIBS += -lGpUtils$$TARGET_POSTFIX
+
+	LIBS += -lfmt
+}
+
 # ----------- Sources and headers -----------
 SOURCES += \
 	GpCryptoWallet.cpp \

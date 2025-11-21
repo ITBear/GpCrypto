@@ -10,6 +10,7 @@
 #include <GpCore2/GpUtils/Streams/GpByteReader.hpp>
 #include <GpCore2/GpUtils/Streams/GpByteWriter.hpp>
 #include <GpCore2/GpUtils/Types/UIDs/GpUUID.hpp>
+#include <GpCrypto/GpCryptoCore/Utils/GpCryptoProgress.hpp>
 
 namespace GPlatform {
 
@@ -18,7 +19,8 @@ class GP_CRYPTO_UTILS_API GpCryptoFileUtils
 public:
     CLASS_REMOVE_CTRS_DEFAULT_MOVE_COPY(GpCryptoFileUtils)
 
-    using Sha256 = GpCryptoHash_Sha2::Res256T;
+    using Sha256                    = GpCryptoHash_Sha2::Res256T;
+    using ProgressChannelOptRefT    = GpCryptoProgress::ChannelT::C::Opts::Ref;
 
     enum class DstWriteMode
     {
@@ -37,7 +39,7 @@ public:
         AES_256             = 0xCA00000000002000
     };
 
-    enum class ProcessStageEvent
+    enum class ProcessStage
     {
         HASH_CALCULATION,
         FILE_ENCRYPTION,
@@ -69,53 +71,53 @@ public:
     };
 
 public:
-    static void                     SEncrypt            (std::string_view                   aFileNameSrc,
-                                                         std::string_view                   aFileNameDst,
-                                                         std::string_view                   aPassword,
-                                                         DstWriteMode                       aDstWriteMode,
-                                                         FormatVersion                      aFormatVersion,
-                                                         CryptoAlgo                         aCryptoAlgo,
-                                                         size_t                             aMaxChunkSize,
-                                                         std::atomic_flag&                  aStopFlag,
-                                                         GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
-    static void                     SDecrypt            (std::string_view                   aFileNameSrc,
-                                                         std::string_view                   aFileNameDst,
-                                                         std::string_view                   aPassword,
-                                                         DstWriteMode                       aDstWriteMode,
-                                                         std::atomic_flag&                  aStopFlag,
-                                                         GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
+    static void                     SEncrypt        (std::string_view       aFileNameSrc,
+                                                     std::string_view       aFileNameDst,
+                                                     std::string_view       aPassword,
+                                                     DstWriteMode           aDstWriteMode,
+                                                     FormatVersion          aFormatVersion,
+                                                     CryptoAlgo             aCryptoAlgo,
+                                                     size_t                 aMaxChunkSize,
+                                                     std::atomic_flag&      aStopFlag,
+                                                     ProgressChannelOptRefT aProgressChannel);
+    static void                     SDecrypt        (std::string_view       aFileNameSrc,
+                                                     std::string_view       aFileNameDst,
+                                                     std::string_view       aPassword,
+                                                     DstWriteMode           aDstWriteMode,
+                                                     std::atomic_flag&      aStopFlag,
+                                                     ProgressChannelOptRefT aProgressChannel);
 
 private:
-    static size_t                   SEncryptedSize      (FormatVersion      aFormatVersion,
-                                                         size_t             aSrcFileSize,
-                                                         size_t             aMaxChunkSize);
-    static void                     SEncrypt            (GpByteReader&                      aReader,
-                                                         GpByteWriter&                      aWriter,
-                                                         std::string_view                   aPassword,
-                                                         const EncryptedFileHeader&         aHeader,
-                                                         std::atomic_flag&                  aStopFlag,
-                                                         GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
-    static void                     SDecrypt            (GpByteReader&                      aReader,
-                                                         GpByteWriter&                      aWriter,
-                                                         std::string_view                   aPassword,
-                                                         const EncryptedFileHeader&         aHeader,
-                                                         std::atomic_flag&                  aStopFlag,
-                                                         GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
-    static void                     SValidateDecrypt    (const EncryptedFileHeader&         aHeader,
-                                                         GpSpanByteRW                       aFileDstDataPtr,
-                                                         std::atomic_flag&                  aStopFlag,
-                                                         GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
-    static EncryptedFileHeader::SP  SMakeHeader         (FormatVersion                      aFormatVersion,
-                                                         CryptoAlgo                         aCryptoAlgo,
-                                                         GpSpanByteR                        aFileDataPtr,
-                                                         size_t                             aMaxChunkSize,
-                                                         std::atomic_flag&                  aStopFlag,
-                                                         GpEventChannelAny::C::Opts::Ref    aEventChannelOpt);
-    static size_t                   SHeaderSize         (FormatVersion      aFormatVersion);
-    static EncryptedFileHeader::SP  SReadHeader         (GpByteReader&  aReader);
-    static void                     SValidateHeader     (const EncryptedFileHeader& aHeader);
-    static void                     SWriteHeader        (GpByteWriter&              aWriter,
-                                                         const EncryptedFileHeader& aHeader);
+    static size_t                   SEncryptedSize  (FormatVersion      aFormatVersion,
+                                                     size_t             aSrcFileSize,
+                                                     size_t             aMaxChunkSize);
+    static void                     SEncrypt        (GpByteReader&              aReader,
+                                                     GpByteWriter&              aWriter,
+                                                     std::string_view           aPassword,
+                                                     const EncryptedFileHeader& aHeader,
+                                                     std::atomic_flag&          aStopFlag,
+                                                     ProgressChannelOptRefT     aProgressChannel);
+    static void                     SDecrypt        (GpByteReader&              aReader,
+                                                     GpByteWriter&              aWriter,
+                                                     std::string_view           aPassword,
+                                                     const EncryptedFileHeader& aHeader,
+                                                     std::atomic_flag&          aStopFlag,
+                                                     ProgressChannelOptRefT     aProgressChannel);
+    static void                     SValidateDecrypt(const EncryptedFileHeader& aHeader,
+                                                     GpSpanByteRW               aFileDstDataPtr,
+                                                     std::atomic_flag&          aStopFlag,
+                                                     ProgressChannelOptRefT     aProgressChannel);
+    static EncryptedFileHeader::SP  SMakeHeader     (FormatVersion          aFormatVersion,
+                                                     CryptoAlgo             aCryptoAlgo,
+                                                     GpSpanByteR            aFileDataPtr,
+                                                     size_t                 aMaxChunkSize,
+                                                     std::atomic_flag&      aStopFlag,
+                                                     ProgressChannelOptRefT aProgressChannel);
+    static size_t                   SHeaderSize     (FormatVersion      aFormatVersion);
+    static EncryptedFileHeader::SP  SReadHeader     (GpByteReader&  aReader);
+    static void                     SValidateHeader (const EncryptedFileHeader& aHeader);
+    static void                     SWriteHeader    (GpByteWriter&              aWriter,
+                                                     const EncryptedFileHeader& aHeader);
 };
 
 }// namespace GPlatform

@@ -1,7 +1,10 @@
 #include <GpCrypto/GpCryptoWallet/GpCryptoWalletLib.hpp>
+#include <GpCore2/GpUtils/Other/GpLinkedLibsInfo.hpp>
 
-namespace GPlatform {
+GP_STATIC_INITIALIZER_IMPL(GpCryptoWallet)
+GP_LIB_REGISTRATOR(GpCryptoWalletLib)
 
-GP_IMPLEMENT_LIB_REGISTRATOR(GpCryptoWalletLib)
-
-}// namespace GPlatform
+void    GpCryptoWallet_StaticInitializer::OnInitialize (void)
+{
+    GpCryptoWalletLib::SRegisterSelf();
+}

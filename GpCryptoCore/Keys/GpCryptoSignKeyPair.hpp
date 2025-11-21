@@ -24,7 +24,7 @@ public:
 
     TypeTE                      Type                    (void) const noexcept {return iType;}
 
-    virtual GpBytesArray        Sign                    (GpSpanByteR aData) const = 0;
+    virtual GpByteArray         Sign                    (GpSpanByteR aData) const = 0;
     [[nodiscard]] virtual bool  VerifySign              (GpSpanByteR aData,
                                                          GpSpanByteR aSign) const = 0;
 

@@ -25,7 +25,7 @@ GpCryptoKeyFactory_X25519_Rnd::~GpCryptoKeyFactory_X25519_Rnd (void) noexcept
 GpCryptoEncryptKeyPair::CSP GpCryptoKeyFactory_X25519_Rnd::Generate (void)
 {
     GpSecureStorage::SP privateBytes = MakeSP<GpSecureStorage>();
-    GpBytesArray        publicBytes;
+    GpByteArray         publicBytes;
 
     {
         privateBytes.V().Resize(size_t(crypto_box_SECRETKEYBYTES));

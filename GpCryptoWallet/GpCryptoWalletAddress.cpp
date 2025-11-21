@@ -17,7 +17,7 @@ GpCryptoWalletAddress::~GpCryptoWalletAddress (void) noexcept
     iKeyPair.Clear();
 }
 
-GpBytesArray    GpCryptoWalletAddress::SignData (GpSpanByteR aData) const
+GpByteArray GpCryptoWalletAddress::SignData (GpSpanByteR aData) const
 {
     return iKeyPair.V().Sign(aData);
 }

@@ -15,17 +15,17 @@ public:
     using TypeTE    = TypeT::EnumT;
 
 protected:
-                                GpCryptoEncryptKeyPair  (TypeTE                 aType,
-                                                         GpSecureStorage::CSP   aPrivateKey,
-                                                         GpSpanByteR            aPublicKey);
+                    GpCryptoEncryptKeyPair  (TypeTE                 aType,
+                                             GpSecureStorage::CSP   aPrivateKey,
+                                             GpSpanByteR            aPublicKey);
 
 public:
-    virtual                     ~GpCryptoEncryptKeyPair (void) noexcept;
+    virtual         ~GpCryptoEncryptKeyPair (void) noexcept;
 
-    TypeTE                      Type                    (void) const noexcept {return iType;}
+    TypeTE          Type                    (void) const noexcept {return iType;}
 
 private:
-    const TypeTE                iType;
+    const TypeTE    iType;
 };
 
 }// namespace GPlatform

@@ -31,6 +31,14 @@ equals(var_os, "linux") {
 	LIBS += -lfmt
 }
 
+equals(var_os, "macos") {
+	LIBS += -lGpUtils$$TARGET_POSTFIX
+
+	LIBS += -lutf8proc$$TARGET_POSTFIX
+	LIBS += -lsodium
+	LIBS += -lfmt
+}
+
 # ----------- Sources and headers -----------
 SOURCES += \
 	Encryption/GpEncryptionUtils_XChaCha20_Poly1305.cpp \
@@ -61,6 +69,7 @@ SOURCES += \
 	Keys/HD/GpCryptoHDSchemeType.cpp \
 	MnemonicCodes/GpCryptoMnemonicUtils.cpp \
 	Utils/GpByteWriterStorageSecure.cpp \
+	Utils/GpCryptoProgress.cpp \
 	Utils/GpCryptoRandom.cpp \
 	Utils/GpSecureStorage.cpp \
 	Utils/GpSecureStorageViewR.cpp \
@@ -74,7 +83,7 @@ HEADERS += \
 	../Config/GpConfigCrypto_os_ios.hpp \
 	../Config/GpConfigCrypto_os_ios_simulator.hpp \
 	../Config/GpConfigCrypto_os_linux.hpp \
-	../Config/GpConfigCrypto_os_macosx.hpp \
+	../Config/GpConfigCrypto_os_macos.hpp \
 	../Config/GpConfigCrypto_os_windows.hpp \
 	Encryption/GpEncryptionUtils_XChaCha20_Poly1305.hpp \
 	ExtSources/ripemd160.hpp \
@@ -107,6 +116,7 @@ HEADERS += \
 	Keys/HD/GpCryptoHDSchemeType.hpp \
 	MnemonicCodes/GpCryptoMnemonicUtils.hpp \
 	Utils/GpByteWriterStorageSecure.hpp \
+	Utils/GpCryptoProgress.hpp \
 	Utils/GpCryptoRandom.hpp \
 	Utils/GpSecureStorage.hpp \
 	Utils/GpSecureStorageViewR.hpp \

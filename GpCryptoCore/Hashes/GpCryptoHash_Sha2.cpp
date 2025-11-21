@@ -1,5 +1,4 @@
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Sha2.hpp>
-#include <GpCore2/GpUtils/EventBus/Events/GpDataProcessUpdateEvent.hpp>
 #include <algorithm>
 
 #if defined(RELEASE_BUILD_STATIC)
@@ -30,11 +29,11 @@ GpCryptoHash_Sha2::Res256T  GpCryptoHash_Sha2::S_256 (GpSpanByteR aData)
 
 void    GpCryptoHash_Sha2::S_256
 (
-    GpSpanByteR                     aData,
-    GpSpanByteRW                    aResOut,
-    const size_t                    aMaxChunkSize,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpSpanByteR             aData,
+    GpSpanByteRW            aResOut,
+    const size_t            aMaxChunkSize,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     VERIFY
@@ -43,8 +42,8 @@ void    GpCryptoHash_Sha2::S_256
         "`aRes` size is not equal to 32"_sv
     );
 
-    const size_t maxChunkSize = aMaxChunkSize;
-    GpBytesArray chunkBuffer;
+    const size_t    maxChunkSize = aMaxChunkSize;
+    GpByteArray     chunkBuffer;
     chunkBuffer.resize(maxChunkSize);
 
     crypto_hash_sha256_state state;
@@ -60,7 +59,7 @@ void    GpCryptoHash_Sha2::S_256
     const size_t    chunksCount         = (dataTotalSize / maxChunkSize)
                                         + ((dataTotalSize % maxChunkSize) > 0 ? 1 : 0);
 
-    GpDataProcessUpdateEventEmitter dataProcessUpdateEventEmitter{dataTotalSize};
+    GpCryptoProgress progress{dataTotalSize, 0.1};
 
     for (size_t chunkId = 0; chunkId < chunksCount; chunkId++)
     {
@@ -89,12 +88,13 @@ void    GpCryptoHash_Sha2::S_256
 
         dataProcessedSize += dataToProcessSize;
 
-        if (aEventChannelOpt.has_value())
+        if (aProgressChannel.has_value())
         {
-            dataProcessUpdateEventEmitter.Update
+            progress.Update
             (
                 dataProcessedSize,
-                aEventChannelOpt.value().get()
+                -1,// unused
+                aProgressChannel.value().get()
             );
         }
     }
@@ -108,27 +108,27 @@ void    GpCryptoHash_Sha2::S_256
 
 GpCryptoHash_Sha2::Res256T  GpCryptoHash_Sha2::S_256
 (
-    GpSpanByteR                     aData,
-    const size_t                    aMaxChunkSize,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpSpanByteR             aData,
+    const size_t            aMaxChunkSize,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     Res256T         res;
     GpSpanByteRW    r{res};
 
-    S_256(aData, r, aMaxChunkSize, aStopFlag, aEventChannelOpt);
+    S_256(aData, r, aMaxChunkSize, aStopFlag, aProgressChannel);
 
     return res;
 }
 
 void    GpCryptoHash_Sha2::S_512
 (
-    GpSpanByteR                     aData,
-    GpSpanByteRW                    aResOut,
-    const size_t                    aMaxChunkSize,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpSpanByteR             aData,
+    GpSpanByteRW            aResOut,
+    const size_t            aMaxChunkSize,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     VERIFY
@@ -152,7 +152,7 @@ void    GpCryptoHash_Sha2::S_512
     const size_t    chunksCount         = (dataTotalSize / maxChunkSize)
                                         + ((dataTotalSize % maxChunkSize) > 0 ? 1 : 0);
 
-    GpDataProcessUpdateEventEmitter dataProcessUpdateEventEmitter{dataTotalSize};
+    GpCryptoProgress progress{dataTotalSize, 0.1};
 
     for (size_t chunkId = 0; chunkId < chunksCount; chunkId++)
     {
@@ -178,12 +178,13 @@ void    GpCryptoHash_Sha2::S_512
 
         dataProcessedSize += dataToProcessSize;
 
-        if (aEventChannelOpt.has_value())
+        if (aProgressChannel.has_value())
         {
-            dataProcessUpdateEventEmitter.Update
+            progress.Update
             (
                 dataProcessedSize,
-                aEventChannelOpt.value().get()
+                -1,// unused
+                aProgressChannel.value().get()
             );
         }
     }
@@ -197,16 +198,16 @@ void    GpCryptoHash_Sha2::S_512
 
 GpCryptoHash_Sha2::Res512T  GpCryptoHash_Sha2::S_512
 (
-    GpSpanByteR                     aData,
-    const size_t                    aMaxChunkSize,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpSpanByteR             aData,
+    const size_t            aMaxChunkSize,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     Res512T         res;
     GpSpanByteRW    r{res};
 
-    S_512(aData, r, aMaxChunkSize, aStopFlag, aEventChannelOpt);
+    S_512(aData, r, aMaxChunkSize, aStopFlag, aProgressChannel);
 
     return res;
 }

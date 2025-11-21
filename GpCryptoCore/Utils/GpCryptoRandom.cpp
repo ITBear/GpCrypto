@@ -1,5 +1,5 @@
 #include <GpCrypto/GpCryptoCore/Utils/GpCryptoRandom.hpp>
-#include <GpCore2/GpUtils/Other/GpRAIIonDestruct.hpp>
+#include <GpCore2/GpUtils/Other/GpDefer.hpp>
 
 #if defined(RELEASE_BUILD_STATIC)
 #   define SODIUM_STATIC
@@ -29,7 +29,7 @@ void    GpCryptoRandom::SEntropy
     size_t      bytesLeft   = aSize;
     u_int_32    randVal     = 0;
 
-    GpRAIIonDestruct randValDestructor = [&]()
+    GpDefer randValDestructor = [&]()
     {
         sodium_memzero(&randVal, sizeof(randVal));
     };

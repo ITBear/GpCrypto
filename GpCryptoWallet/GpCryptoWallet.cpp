@@ -68,9 +68,9 @@ GpCryptoWalletAddress::C::Vec::SP   GpCryptoWallet::FindAddrAllByName (std::stri
         auto r = _RndAddrGroup().FindAllByName(aAddrName);
         res.insert
         (
-            res.end(),
-            std::make_move_iterator(r.begin()),
-            std::make_move_iterator(r.end())
+            std::end(res),
+            std::make_move_iterator(std::begin(r)),
+            std::make_move_iterator(std::end(r))
         );
     }
 
@@ -83,9 +83,9 @@ GpCryptoWalletAddress::C::Vec::SP   GpCryptoWallet::FindAddrAllByName (std::stri
 
         res.insert
         (
-            res.end(),
-            std::make_move_iterator(r.begin()),
-            std::make_move_iterator(r.end())
+            std::end(res),
+            std::make_move_iterator(std::begin(r)),
+            std::make_move_iterator(std::end(r))
         );
     }
 
@@ -131,7 +131,7 @@ std::optional<GpCryptoWalletAddressGroup::SP>   GpCryptoWallet::FindHDGroup (con
     //Try to search in "HD" groups
     auto iter = iHDAddrGroups.find(aGroupUID);
 
-    if (iter != iHDAddrGroups.end())
+    if (iter != std::end(iHDAddrGroups))
     {
         return iter->second;
     } else
@@ -145,7 +145,7 @@ bool    GpCryptoWallet::DeleteHDGroup (const GpUUID& aGroupUID)
     //Try to search in "HD" groups
     auto iter = iHDAddrGroups.find(aGroupUID);
 
-    if (iter != iHDAddrGroups.end())
+    if (iter != std::end(iHDAddrGroups))
     {
         iHDAddrGroups.erase(iter);
         return true;

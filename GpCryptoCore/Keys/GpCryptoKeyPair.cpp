@@ -8,7 +8,7 @@ GpCryptoKeyPair::GpCryptoKeyPair
     GpSpanByteR             aPublicKey
 ):
 iPrivateKey{std::move(aPrivateKey)},
-iPublicKey {GpArrayUtils::SMake<GpBytesArray, GpSpanByteR>(aPublicKey)}
+iPublicKey {GpArrayUtils::SMake<GpByteArray, GpSpanByteR>(aPublicKey)}
 {
 }
 
@@ -72,7 +72,7 @@ GpSecureStorage::SP GpCryptoKeyPair::ToPrivateStrHexWithPrefix (void) const
     return resSP;
 }
 
-GpBytesArray    GpCryptoKeyPair::ToPublicBytesWithPrefix (void) const
+GpByteArray GpCryptoKeyPair::ToPublicBytesWithPrefix (void) const
 {
     VERIFY
     (
@@ -82,8 +82,8 @@ GpBytesArray    GpCryptoKeyPair::ToPublicBytesWithPrefix (void) const
 
     GpSpanByteR                 prefixPtr   = PublicBytesPrefix();
 
-    const size_byte_t               resSize     = prefixPtr.SizeLeft() + size_byte_t::SMake(std::size(iPublicBytes));
-    GpBytesArray                    res;
+    const size_byte_t           resSize     = prefixPtr.SizeLeft() + size_byte_t::SMake(std::size(iPublicBytes));
+    GpByteArray                 res;
     res.resize(resSize.As<size_t>());
     GpByteWriterStorageFixedSize    resStorage(res);
     GpByteWriter                    resWriter(resStorage);
@@ -98,13 +98,13 @@ GpBytesArray    GpCryptoKeyPair::ToPublicBytesWithPrefix (void) const
     return res;
 }
 
-GpBytesArray    GpCryptoKeyPair::ToPublicStrHexWithPrefix (void) const
+GpByteArray GpCryptoKeyPair::ToPublicStrHexWithPrefix (void) const
 {
-    const GpBytesArray      publicData = ToPublicBytesWithPrefix();
+    const GpByteArray   publicData = ToPublicBytesWithPrefix();
 
     //Str hex data
-    const size_byte_t       resSize = size_byte_t::SMake(std::size(publicData)) * 2_byte;
-    GpBytesArray            res;
+    const size_byte_t   resSize = size_byte_t::SMake(std::size(publicData)) * 2_byte;
+    GpByteArray         res;
     res.resize(resSize.As<size_t>());
 
     StrOps::SFromBytesHex(publicData, res);

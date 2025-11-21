@@ -32,7 +32,7 @@ GpCryptoEncryptKeyPair::CSP GpCryptoKeyFactory_X25519_FromSeed::Generate (void)
     );
 
     GpSecureStorage::SP privateBytes = MakeSP<GpSecureStorage>();
-    GpBytesArray        publicBytes;
+    GpByteArray         publicBytes;
 
     privateBytes.V().Resize(size_t(crypto_box_SECRETKEYBYTES));
     publicBytes.resize(size_t(crypto_box_PUBLICKEYBYTES));

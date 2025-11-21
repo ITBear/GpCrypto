@@ -2,7 +2,6 @@
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_KDF_Passwd.hpp>
 #include <GpCrypto/GpCryptoCore/Utils/GpByteWriterStorageSecure.hpp>
 #include <GpCore2/GpUtils/Streams/GpByteWriterStorageByteArray.hpp>
-#include <GpCore2/GpUtils/EventBus/Events/GpDataProcessUpdateEvent.hpp>
 
 //GP_WARNING_PUSH()
 //GP_WARNING_DISABLE_GCC(duplicated-branches)
@@ -67,14 +66,14 @@ size_t  GpEncryptionUtils_XChaCha20_Poly1305::SEncryptTotalSize
     return NumOps::SAdd<size_t>(crypto_secretstream_xchacha20poly1305_HEADERBYTES, payloadSize);
 }
 
-GpBytesArray    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
+GpByteArray GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
 (
-    GpSpanByteR                     aSrcData,
-    const size_t                    aMaxChunkSize,
-    GpSpanCharR                     aPassword,
-    GpSpanCharR                     aSalt,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpSpanByteR             aSrcData,
+    const size_t            aMaxChunkSize,
+    GpSpanCharR             aPassword,
+    GpSpanCharR             aSalt,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     GpSecureStorage::CSP key = SPasswordToKey(aPassword, aSalt);
@@ -82,7 +81,7 @@ GpBytesArray    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
     GpByteReaderStorage srcDataReaderStorage{aSrcData};
     GpByteReader        srcDataReader{srcDataReaderStorage};
 
-    GpBytesArray encriptedData;
+    GpByteArray encriptedData;
     {
         encriptedData.resize(aSrcData.Count());
 
@@ -96,7 +95,7 @@ GpBytesArray    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
             aMaxChunkSize,
             key.V().ViewR().R(),
             aStopFlag,
-            aEventChannelOpt
+            aProgressChannel
         );
 
         encriptedDataWriter.OnEnd();
@@ -107,12 +106,12 @@ GpBytesArray    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
 
 GpSecureStorage::CSP    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
 (
-    GpSpanByteR                     aSrcData,
-    const size_t                    aMaxChunkSize,
-    GpSpanCharR                     aPassword,
-    GpSpanCharR                     aSalt,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpSpanByteR             aSrcData,
+    const size_t            aMaxChunkSize,
+    GpSpanCharR             aPassword,
+    GpSpanCharR             aSalt,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     GpSecureStorage::CSP key = SPasswordToKey(aPassword, aSalt);
@@ -134,7 +133,7 @@ GpSecureStorage::CSP    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
         aMaxChunkSize,
         key.V().ViewR().R(),
         aStopFlag,
-        aEventChannelOpt
+        aProgressChannel
     );
 
     return decriptedDataSP;
@@ -142,13 +141,13 @@ GpSecureStorage::CSP    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
 
 void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
 (
-    GpByteReader&                   aReader,
-    GpByteWriter&                   aWriter,
-    const size_t                    aMaxChunkSize,
-    GpSpanCharR                     aPassword,
-    GpSpanCharR                     aSalt,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpByteReader&           aReader,
+    GpByteWriter&           aWriter,
+    const size_t            aMaxChunkSize,
+    GpSpanCharR             aPassword,
+    GpSpanCharR             aSalt,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     GpSecureStorage::CSP key = SPasswordToKey(aPassword, aSalt);
@@ -160,19 +159,19 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
         aMaxChunkSize,
         key.V().ViewR().R(),
         aStopFlag,
-        aEventChannelOpt
+        aProgressChannel
     );
 }
 
 void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
 (
-    GpByteReader&                   aReader,
-    GpByteWriter&                   aWriter,
-    const size_t                    aMaxChunkSize,
-    GpSpanCharR                     aPassword,
-    GpSpanCharR                     aSalt,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpByteReader&           aReader,
+    GpByteWriter&           aWriter,
+    const size_t            aMaxChunkSize,
+    GpSpanCharR             aPassword,
+    GpSpanCharR             aSalt,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     GpSecureStorage::CSP key = SPasswordToKey(aPassword, aSalt);
@@ -184,18 +183,18 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
         aMaxChunkSize,
         key.V().ViewR().R(),
         aStopFlag,
-        aEventChannelOpt
+        aProgressChannel
     );
 }
 
 void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
 (
-    GpByteReader&                   aReader,
-    GpByteWriter&                   aWriter,
-    const size_t                    aMaxChunkSize,
-    GpSpanByteR                     aKey,
-    std::atomic_flag&               aStopFlag,
-    [[maybe_unused]] GpEventChannelAny::C::Opts::Ref    aEventChannelOpt
+    GpByteReader&           aReader,
+    GpByteWriter&           aWriter,
+    const size_t            aMaxChunkSize,
+    GpSpanByteR             aKey,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     const u_int_64  encryptedDataTotalSize      = aReader.SizeLeft();
@@ -228,7 +227,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
     aWriter.Bytes(encryptHeader);
 
     // Process chunks
-    GpDataProcessUpdateEventEmitter dataProcessUpdateEventEmitter{encryptedDataTotalSize};
+    GpCryptoProgress progress{encryptedDataTotalSize, 0.1};
 
     while (aReader.SizeLeft() > 0)
     {
@@ -264,12 +263,13 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
 
         encryptedDataProcessedSize += srcChunkSize;
 
-        if (aEventChannelOpt.has_value())
+        if (aProgressChannel.has_value())
         {
-            dataProcessUpdateEventEmitter.Update
+            progress.Update
             (
                 encryptedDataProcessedSize,
-                aEventChannelOpt.value().get()
+                -1,// unused
+                aProgressChannel.value().get()
             );
         }
     }
@@ -303,12 +303,12 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SEncrypt
 
 void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
 (
-    GpByteReader&                   aReader,
-    GpByteWriter&                   aWriter,
-    const size_t                    aMaxChunkSize,
-    GpSpanByteR                     aKey,
-    std::atomic_flag&               aStopFlag,
-    GpEventChannelAny::C::Opts::Ref aEventChannelOpt
+    GpByteReader&           aReader,
+    GpByteWriter&           aWriter,
+    const size_t            aMaxChunkSize,
+    GpSpanByteR             aKey,
+    std::atomic_flag&       aStopFlag,
+    ProgressChannelOptRefT  aProgressChannel
 )
 {
     const u_int_64  decryptedDataTotalSize      = aWriter.SizeLeft();
@@ -345,7 +345,7 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
     // Process chunks
     unsigned char tag = 0;
 
-    GpDataProcessUpdateEventEmitter dataProcessUpdateEventEmitter{decryptedDataTotalSize};
+    GpCryptoProgress progress{decryptedDataTotalSize, 0.1};
 
     while (   (aReader.SizeLeft() > 0)
            || (tag != crypto_secretstream_xchacha20poly1305_TAG_FINAL))
@@ -355,8 +355,8 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
             THROW("Process was interrupted");
         }
 
-        const size_t    readerSizeLeft      = aReader.SizeLeft();
-        const size_t    encryptChunkSize    = std::min(readerSizeLeft, aMaxChunkSize + crypto_secretstream_xchacha20poly1305_ABYTES);
+        const size_t readerSizeLeft     = aReader.SizeLeft();
+        const size_t encryptChunkSize   = std::min(readerSizeLeft, aMaxChunkSize + crypto_secretstream_xchacha20poly1305_ABYTES);
 
         VERIFY
         (
@@ -397,12 +397,13 @@ void    GpEncryptionUtils_XChaCha20_Poly1305::SDecrypt
             "crypto_secretstream_xchacha20poly1305_pull return error"_sv
         );
 
-        if (aEventChannelOpt.has_value())
+        if (aProgressChannel.has_value())
         {
-            dataProcessUpdateEventEmitter.Update
+            progress.Update
             (
                 decryptedDataProcessedSize,
-                aEventChannelOpt.value().get()
+                -1,// unused
+                aProgressChannel.value().get()
             );
         }
     }

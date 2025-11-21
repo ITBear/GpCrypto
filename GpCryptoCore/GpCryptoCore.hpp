@@ -10,11 +10,11 @@ class GP_CRYPTO_CORE_API GpCryptoCore
     CLASS_REMOVE_CTRS_DEFAULT_MOVE_COPY(GpCryptoCore)
 
 public:
-    static void         SInit                   (void);
-    static void         SClear                  (void);
+    static void     SInit                   (void);
+    static void     SClear                  (void);
 
 private:
-    static void         SCheckEntropyCapacity   (void);
+    static void     SCheckEntropyCapacity   (void);
 };
 
 }// namespace GPlatform

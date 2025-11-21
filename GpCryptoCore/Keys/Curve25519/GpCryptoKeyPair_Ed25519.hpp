@@ -15,11 +15,11 @@ public:
                                                              GpSpanByteR            aPublicKey) noexcept;
     virtual                     ~GpCryptoKeyPair_Ed25519    (void) noexcept override final;
 
-    virtual GpBytesArray        Sign                        (GpSpanByteR aData) const override final;
+    virtual GpByteArray         Sign                        (GpSpanByteR aData) const override final;
     [[nodiscard]] virtual bool  VerifySign                  (GpSpanByteR aData,
                                                              GpSpanByteR aSign) const override final;
 
-    static GpBytesArray         SSign                       (GpSpanByteR aData,
+    static GpByteArray          SSign                       (GpSpanByteR aData,
                                                              GpSpanByteR aPrivateKey);
     static bool                 SVerifySign                 (GpSpanByteR aData,
                                                              GpSpanByteR aSign,

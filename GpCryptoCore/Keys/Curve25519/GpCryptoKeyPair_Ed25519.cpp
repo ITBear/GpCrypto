@@ -34,7 +34,7 @@ GpCryptoKeyPair_Ed25519::~GpCryptoKeyPair_Ed25519 (void) noexcept
 {
 }
 
-GpBytesArray    GpCryptoKeyPair_Ed25519::Sign (GpSpanByteR aData) const
+GpByteArray GpCryptoKeyPair_Ed25519::Sign (GpSpanByteR aData) const
 {
     return SSign
     (
@@ -57,7 +57,7 @@ bool    GpCryptoKeyPair_Ed25519::VerifySign
     );
 }
 
-GpBytesArray    GpCryptoKeyPair_Ed25519::SSign
+GpByteArray GpCryptoKeyPair_Ed25519::SSign
 (
     GpSpanByteR aData,
     GpSpanByteR aPrivateKey
@@ -75,7 +75,7 @@ GpBytesArray    GpCryptoKeyPair_Ed25519::SSign
         "Wrong private key size"_sv
     );
 
-    GpBytesArray sign;
+    GpByteArray sign;
     sign.resize(size_t(crypto_sign_ed25519_BYTES));
 
     VERIFY

@@ -1,5 +1,5 @@
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Hmac.hpp>
-#include <GpCore2/GpUtils/Other/GpRAIIonDestruct.hpp>
+#include <GpCore2/GpUtils/Other/GpDefer.hpp>
 
 #if defined(RELEASE_BUILD_STATIC)
 #   define SODIUM_STATIC
@@ -29,7 +29,7 @@ void    GpCryptoHash_Hmac::S_256
     );
 
     crypto_auth_hmacsha256_state hCtx;
-    GpRAIIonDestruct hCtxDestructor = [&]()
+    GpDefer hCtxDestructor = [&]()
     {
         sodium_memzero(&hCtx, sizeof(hCtx));
     };
@@ -81,7 +81,7 @@ void    GpCryptoHash_Hmac::S_512
     );
 
     crypto_auth_hmacsha512_state hCtx;
-    GpRAIIonDestruct hCtxDestructor = [&]()
+    GpDefer hCtxDestructor = [&]()
     {
         sodium_memzero(&hCtx, sizeof(hCtx));
     };

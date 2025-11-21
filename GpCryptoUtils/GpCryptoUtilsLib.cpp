@@ -1,7 +1,10 @@
 #include <GpCrypto/GpCryptoUtils/GpCryptoUtilsLib.hpp>
+#include <GpCore2/GpUtils/Other/GpLinkedLibsInfo.hpp>
 
-namespace GPlatform {
+GP_STATIC_INITIALIZER_IMPL(GpCryptoUtils)
+GP_LIB_REGISTRATOR(GpCryptoUtilsLib)
 
-GP_IMPLEMENT_LIB_REGISTRATOR(GpCryptoUtilsLib)
-
-}// namespace GPlatform
+void    GpCryptoUtils_StaticInitializer::OnInitialize (void)
+{
+    GpCryptoUtilsLib::SRegisterSelf();
+}

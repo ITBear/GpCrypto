@@ -3,7 +3,7 @@
 #include <GpCrypto/Config/GpConfigCrypto.hpp>
 #include <GpCrypto/GpCryptoUtils/GpCryptoUtils_global.hpp>
 #include <GpCore2/GpUtils/Macro/GpMacroClass.hpp>
-#include <GpCore2/GpUtils/Types/Containers/GpBytesArray.hpp>
+#include <GpCore2/GpUtils/Types/Containers/GpByteArray.hpp>
 #include <GpCrypto/GpCryptoCore/Hashes/GpCryptoHash_Hmac.hpp>
 
 namespace GPlatform {
@@ -73,8 +73,8 @@ private:
                                                                  GpSpanByteR    aPassword);
 
 private:
-    HashTypeT                       iHashType;
-    KeyDerivationFnT                iKeyDerivationFn;
+    [[maybe_unused]] const HashTypeT        iHashType;
+    [[maybe_unused]] const KeyDerivationFnT iKeyDerivationFn;
 
     SmallContainerT                 iClientUserName;
     SmallContainerT                 iClientNonce;

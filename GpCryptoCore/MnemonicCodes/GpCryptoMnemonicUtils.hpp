@@ -23,35 +23,35 @@ public:
     };
 
 public:
-    static GpSecureStorage::CSP     SGenerateNewMnemonic    (const WordListT&   aWordList,
-                                                             std::string        aSpaceChar,
-                                                             EntropySize        aEntropySize);
+    static GpSecureStorage::CSP SGenerateNewMnemonic    (const WordListT&   aWordList,
+                                                         std::string        aSpaceChar,
+                                                         EntropySize        aEntropySize);
 
-    [[nodiscard]] static bool       SValidateMnemonic       (const WordListT&       aWordList,
-                                                             std::string            aSpaceChar,
-                                                             const GpSecureStorage& aMnemonic);
+    [[nodiscard]] static bool   SValidateMnemonic       (const WordListT&       aWordList,
+                                                         std::string            aSpaceChar,
+                                                         const GpSecureStorage& aMnemonic);
 
-    [[nodiscard]] static bool       SValidateMnemonic       (const WordListT&   aWordList,
-                                                             std::string        aSpaceChar,
-                                                             GpSpanCharR        aMnemonic);
+    [[nodiscard]] static bool   SValidateMnemonic       (const WordListT&   aWordList,
+                                                         std::string        aSpaceChar,
+                                                         GpSpanCharR        aMnemonic);
 
-    static GpSecureStorage::CSP     SSeedFromMnemonic       (const WordListT&       aWordList,
-                                                             std::string            aSpaceChar,
-                                                             const GpSecureStorage& aMnemonic,
-                                                             const GpSecureStorage& aPassword,
-                                                             size_t                 aIterations,
-                                                             size_bit_t             aBitLengthDerivedKey);
+    static GpSecureStorage::CSP SSeedFromMnemonic       (const WordListT&       aWordList,
+                                                         std::string            aSpaceChar,
+                                                         const GpSecureStorage& aMnemonic,
+                                                         const GpSecureStorage& aPassword,
+                                                         size_t                 aIterations,
+                                                         size_bit_t             aBitLengthDerivedKey);
 
-    static GpSecureStorage::CSP     SSeedFromMnemonic       (const WordListT&   aWordList,
-                                                             std::string        aSpaceChar,
-                                                             GpSpanCharR        aMnemonic,
-                                                             GpSpanCharR        aPassword,
-                                                             size_t             aIterations,
-                                                             size_bit_t         aBitLengthDerivedKey);
+    static GpSecureStorage::CSP SSeedFromMnemonic       (const WordListT&   aWordList,
+                                                         std::string        aSpaceChar,
+                                                         GpSpanCharR        aMnemonic,
+                                                         GpSpanCharR        aPassword,
+                                                         size_t             aIterations,
+                                                         size_bit_t         aBitLengthDerivedKey);
 private:
-    static size_t                   SFindConfByWordsCount   (size_t aWordsCount);
-    static u_int_16                 SFindWordId             (const WordListT&   aWordList,
-                                                             GpSpanCharR        aWord);
+    static size_t               SFindConfByWordsCount   (size_t aWordsCount);
+    static u_int_16             SFindWordId             (const WordListT&   aWordList,
+                                                         GpSpanCharR        aWord);
 };
 
 }// namespace GPlatform
